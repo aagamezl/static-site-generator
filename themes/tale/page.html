@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{title}</title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="./css/main.css">
+  <link rel="stylesheet" href="./css/post.css">
+  <link rel="stylesheet" href="./css/code.css">
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.2/styles/default.min.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Libre+Baskerville:400,400i,700">
+</head>
+<body>
+  <nav class="nav">
+    <div class="nav-container">
+      <a href="https://github.com/aagamezl" target="_blank">
+        <h2 class="nav-title">aagamezl</h2>
+      </a>
+      <ul class="nav-menu">
+        <li data-for="item of navigation">
+          <a href="{item.permalink}">{item.title}</a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <main>
+    <div class="post">
+      <h1 class="post-title">{title}</h1>
+
+      {content}
+
+    </div>
+
+    <div class="pagination">
+      <!-- <a href="#" class="left arrow">←</a>
+      <a href="#" class="right arrow">→</a> -->
+
+      <a href="#" class="top">Top</a>
+    </div>
+
+    <footer>
+      <span>
+        <time datetime="2020-09-16 05:49:07 +0000">2020</time>
+        <span>Álvaro Agámez. Made with Love and Craziness</span>
+        <a href="https://github.com/aagamezl" target="_blank">aagamezl</a>.
+      </span>
+    </footer>
+  </main>
+</body>
+</html>

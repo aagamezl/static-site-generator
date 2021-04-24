@@ -1,0 +1,16 @@
+{
+  "name": "blog-system",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "http-server"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "highlight.js": "^10.7.2",
+    "markdown-it": "^12.0.4"
+  }
+}

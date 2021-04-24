@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Changing the GNOME Shell login background</title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="./css/main.css">
+  <link rel="stylesheet" href="./css/css">
+  <link rel="stylesheet" href="./css/code.css">
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.2/styles/default.min.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Libre+Baskerville:400,400i,700">
+</head>
+<body>
+  <nav class="nav">
+    <div class="nav-container">
+      <a href="https://github.com/aagamezl" target="_blank">
+        <h2 class="nav-title">aagamezl</h2>
+      </a>
+      <ul class="nav-menu">
+        <li>
+          <a href="index.html">Posts</a>
+        </li>
+<li>
+          <a href="about.html">About</a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <main>
+    <div class="post">
+      <div class="post-info">
+        <span>Written by Álvaro José Agámez Licha</span><br/>
+        <span>on <time datetime="April 13, 2020">April 13, 2020</time></span>
+      </div>
+
+      <h1 class="post-title">Changing the GNOME Shell login background</h1>
+
+      <p>The &quot;problem&quot; is that I was just tired of the boring purple Ubuntu's background login screen, I REALLY was tired of it, so I asked myself, how can I change the login screen background?, and the quick answer was, no you can't change it, the long answer was, well, you can change it, but this involves dealing with the GNOME Shell CSS.</p>
+<p>Changing your GNOME Shell login background is not complicated if you know what to change and where to make the change. The change consists of modifying the CSS file with the desired image, but in my case, I wanted to change this image every time that I restart my laptop, and I want to download the daily <a href="https://www.bing.com/">Bing</a> image to use it as background.</p>
+<p>I'm using Ubuntu 19.10, so to change the login background I need to modify the file <code>/usr/share/gnome-shell/theme/Yaru/gnome-shell.css</code>, if you are using another distro or Ubuntu version, please search for the correct path on internet, but my path can give you an idea of where to start looking.</p>
+<p>Inside this CSS file, we need to modify the selector <code>#lockDialogGroup</code> from</p>
+<pre class="hljs"><code><span class="hljs-selector-id">#lockDialogGroup</span> {
+  <span class="hljs-attribute">background</span>: <span class="hljs-number">#4f194c</span> <span class="hljs-built_in">url</span>(<span class="hljs-string">noise-texture.png</span>);
+  <span class="hljs-attribute">background-repeat</span>: repeat; }
+</code></pre>
+<p>to</p>
+<pre class="hljs"><code><span class="hljs-selector-id">#lockDialogGroup</span> {
+  <span class="hljs-attribute">background-image</span>: <span class="hljs-built_in">url</span>(<span class="hljs-string">file:///path/to/your/image.ext</span>);
+  <span class="hljs-attribute">background-repeat</span>: no-repeat;
+  <span class="hljs-attribute">background-size</span>: cover;;
+  <span class="hljs-attribute">background-position</span>: center; 
+}
+</code></pre>
+<p>First at all, I tried to found an easy way to change every day the login background in an automatic way, but changing a CSS file every day is not a trivial task just with bash, and if I made a mistake, all my shell could be broken (trust me, that happened like 5 times while I was making manual tests and fortunately was not broken enough to be able to fix it).</p>
+<p>After thinking for a few minutes, I realized that I could create a symbolic link to the daily image and change this symbolic link to point to a different image every day, and use this symbolic link in the CSS file, voilà, the first problem was resolved.</p>
+<p>The command to create a symbolic link is the next:</p>
+<pre class="hljs"><code>ln -s ./path/to/your/real_file.ext ./path/to/your/fake_file.ext
+</code></pre>
+<p>Let's move on to the next problem, this problem is randomly choosing a daily image, for this, I had to make some internet research because I'm not a bash wizard, but the trick actually is simple, we can use the <code>shuf</code> command, this command <em><strong>&quot;Write a random permutation of the input lines to standard output&quot;</strong></em>, great, this looks like the perfect tool for the task, and what can we use as input? well, the perfect tool for this task is <code>ls</code> command.</p>
+<pre class="hljs"><code>ls ./the/path/to/your/backgrounds/**/*.ext | shuf -n 30 | shuf -n 1
+</code></pre>
+<p>If you need to select different file types according to the extension, you could use something like this:</p>
+<pre class="hljs"><code>ls ./path/**/* | egrep <span class="hljs-string">&#x27;\.jpg$|\.jpeg$|\.png$|\.gif$&#x27;</span> | shuf -n 30 | shuf -n 1
+</code></pre>
+<p>If you are wondering why I use the <code>shuf</code> command twice, this is to achieve a higher level of randomness; first I choose 30 random items and after that, I choose 1 random item from the previous group.</p>
+<p>Up to this point, we have almost solved the first part of the problem, we just need to run our script every time our PCs are restarted, for this I decided to use <code>crontab</code> with the <code>@reboot</code> modifier.</p>
+<pre class="hljs"><code>@reboot /path/to/your/script.sh
+</code></pre>
+<p>Please don't forget to give your script execution privileges:</p>
+<pre class="hljs"><code>sudo chmod +x /path/to/your/script.sh
+</code></pre>
+<p>Now we have all the necessary parts to fulfill the first task, so its time to have a complete script, in my case I put it in  <code>/etc/init.d/download-bing-background.sh</code></p>
+<pre class="hljs"><code><span class="hljs-meta">#!/bin/bash</span>
+
+<span class="hljs-comment"># General values for the script</span>
+SOURCE=./the/path/to/your/backgrounds
+DAILY_LOGIN_BACKGROUND=daily-login-background.jpg
+VIRTUAL_FILENAME=<span class="hljs-variable">$SOURCE</span>/<span class="hljs-variable">$DAILY_LOGIN_BACKGROUND</span>
+
+<span class="hljs-comment"># Change the extension according to your needs</span>
+filename=$(ls <span class="hljs-variable">$SOURCE</span>/**/*.jpg | shuf -n 30 | shuf -n 1)
+
+<span class="hljs-comment"># Check if the symbolic link exists, if exists, delete it</span>
+<span class="hljs-keyword">if</span> <span class="hljs-built_in">test</span> -f <span class="hljs-string">&quot;<span class="hljs-variable">$VIRTUAL_FILENAME</span>&quot;</span>; <span class="hljs-keyword">then</span>
+  rm <span class="hljs-variable">$VIRTUAL_FILENAME</span>
+<span class="hljs-keyword">fi</span>
+
+ln -s <span class="hljs-variable">$filename</span> <span class="hljs-variable">$VIRTUAL_FILENAME</span>
+
+<span class="hljs-built_in">echo</span> Daily login background: <span class="hljs-variable">$filename</span>
+</code></pre>
+<p>Now we are automatically changing the login background every time we restart our PCs, the next step is to download the daily image from <a href="https://www.bing.com/">Bing</a>. This is not a big problem with Node.js or PHP (my two main backend languages), but I wanted to solve this with bash only, so the complexity of the task was increased.</p>
+<p>Again, I'm not a bash wizard, but I'm super stubborn, and I really wanted to solve this problem using just bash and at the same time, learn more about bash programming.</p>
+<p>To get the daily <a href="https://www.bing.com/">Bing</a> exists an endpoint that can give you the last 8 images (or just one) in <a href="https://www.bing.com/HPImageArchive.aspx?format=xml&amp;idx=0&amp;n=1">XML</a> or <a href="https://www.bing.com/HPImageArchive.aspx?format=js&amp;idx=0&amp;n=1">JSON</a> format, but again, process <code>XML</code> or <code>JSON</code> just with bash tools is not a trivial task, I could just install some extra tools to do it, but not, I wanted to do it just with bash, so after some extra thinking and research, the chosen tool
+for the task was... regular expressions.</p>
+<p><img src="https://image.slidesharecdn.com/regexp-dm-131205173718-phpapp02/95/regular-expressions-javascript-and-beyond-1-638.jpg" alt="Everybody stands back I know regular expressions" /></p>
+<p>I know, I know, some people always say that when you have a problem and you solve it using regular expressions, now you have two problems, but in this case, I think it is the right tool for the problem.  But how the hell can you use regular expressions in bash?, I was asking me the same, but again after some research, I found that with the <code>sed</code> command you can do it.</p>
+<p>So the first step was to download the <code>JSON</code> file, for this <code>CURL</code> come to the rescue:</p>
+<pre class="hljs"><code><span class="hljs-comment"># Download the JSON file into a variable</span>
+json=$(curl -s <span class="hljs-variable">$BING_IMAGES_URL</span>)
+</code></pre>
+<p>After having the JSON, you just have to get the necessary values:</p>
+<pre class="hljs"><code><span class="hljs-comment"># Get the url and name from the JSON</span>
+image_url=$(<span class="hljs-built_in">echo</span> <span class="hljs-variable">$json</span> | sed -n <span class="hljs-string">&#x27;s|.*&quot;url&quot;:&quot;\([^&quot;]*\)&quot;.*|\1|p&#x27;</span>)
+image_name=$(<span class="hljs-built_in">echo</span> <span class="hljs-variable">$image_url</span> | sed -n <span class="hljs-string">&#x27;s|.*?id=\(.*\)&amp;rf.*|\1|p&#x27;</span>)
+</code></pre>
+<p>And now we can download the image to our PCs using <code>CURL</code> again:</p>
+<pre class="hljs"><code>curl -s /path/to/your/images/folder -o /name/of/the/downloaded/image.ext
+</code></pre>
+<p>Now let's put all the pieces together, in my case I put all the code in  <code>./etc/init.d/download-bing-background.sh</code>:</p>
+<pre class="hljs"><code><span class="hljs-meta">#!/bin/bash</span>
+
+<span class="hljs-comment"># General values for the script</span>
+BING_DOMAIN=<span class="hljs-string">&quot;https://www.bing.com&quot;</span>
+BING_IMAGES_URL=<span class="hljs-string">&quot;https://www.bing.com/HPImageArchive.aspx?format=js&amp;idx=0&amp;n=1&quot;</span>
+DESTINATION=/path/to/your/background/directory
+CURRENT_DIRECTORY=$(date +%Y)-$(date +%m)
+DOWNLOAD_DIRECTORY=<span class="hljs-variable">$DESTINATION</span>/<span class="hljs-variable">$CURRENT_DIRECTORY</span>
+
+<span class="hljs-built_in">echo</span> Image Destination: <span class="hljs-variable">$DOWNLOAD_DIRECTORY</span>
+
+<span class="hljs-comment"># Download the JSON file into a variable</span>
+json=$(curl -s <span class="hljs-variable">$BING_IMAGES_URL</span>)
+
+<span class="hljs-comment"># Get the url and name from the JSON</span>
+image_url=$(<span class="hljs-built_in">echo</span> <span class="hljs-variable">$json</span> | sed -n <span class="hljs-string">&#x27;s|.*&quot;url&quot;:&quot;\([^&quot;]*\)&quot;.*|\1|p&#x27;</span>)
+image_name=$(<span class="hljs-built_in">echo</span> <span class="hljs-variable">$image_url</span> | sed -n <span class="hljs-string">&#x27;s|.*?id=\(.*\)&amp;rf.*|\1|p&#x27;</span>)
+
+<span class="hljs-built_in">echo</span> Downloading image of the day: <span class="hljs-variable">$image_name</span>
+
+<span class="hljs-comment"># Check if the download directory exists or nor</span>
+<span class="hljs-keyword">if</span> [ ! -d <span class="hljs-variable">$DOWNLOAD_DIRECTORY</span> ]; <span class="hljs-keyword">then</span>
+  mkdir <span class="hljs-variable">$DOWNLOAD_DIRECTORY</span>
+<span class="hljs-keyword">fi</span>
+
+<span class="hljs-comment"># Check if the image already exists</span>
+<span class="hljs-keyword">if</span> [ -f <span class="hljs-variable">$DOWNLOAD_DIRECTORY</span>/<span class="hljs-variable">$image_name</span> ]; <span class="hljs-keyword">then</span>
+  <span class="hljs-built_in">echo</span> Image already exists, skipping.
+<span class="hljs-keyword">else</span>
+  curl -s <span class="hljs-variable">$BING_DOMAIN</span>/<span class="hljs-variable">$image_url</span> -o <span class="hljs-variable">$DOWNLOAD_DIRECTORY</span>/<span class="hljs-variable">$image_name</span>
+<span class="hljs-keyword">fi</span>
+</code></pre>
+<p>Please don't forget to give your script execution privileges:</p>
+<pre class="hljs"><code>sudo chmod +x /path/to/your/script.sh
+</code></pre>
+<p>Ok, this is all folks, I hope you enjoyed and learned how I did by solving this &quot;problem&quot; I had with Ubuntu.</p>
+<p>If you have some questions, please send me a message on <a href="https://twitter.com/aagamezl">Twitter</a>.</p>
+
+
+    </div>
+
+    <div class="pagination">
+      <!-- <a href="#" class="left arrow">←</a>
+      <a href="#" class="right arrow">→</a> -->
+
+      <a href="#" class="top">Top</a>
+    </div>
+
+    <footer>
+      <span>
+        <time datetime="2020-09-16 05:49:07 +0000">2020</time>
+        <span>Álvaro Agámez. Made with Love and Craziness</span>
+        <a href="https://github.com/aagamezl" target="_blank">aagamezl</a>.
+      </span>
+    </footer>
+  </main>
+</body>
+</html>
