@@ -18,114 +18,77 @@ const template = require('./template')
 const { getContent } = require('./content')
 const { frontmatter } = require('./parsers')
 
-// const data = {
-//   people: [{
-//     id: 1,
-//     firstName: 'Jack',
-//     lastName: 'Vasquez',
-//     email: 'jvasquez0@unblog.fr',
-//     gender: 'Male',
-//     ipAddress: '210.150.175.206'
-//   }, {
-//     id: 2,
-//     firstName: 'John',
-//     lastName: 'Vasquez',
-//     email: 'jvasquez0@unblog.fr',
-//     gender: 'Male',
-//     ipAddress: '210.150.175.206'
-//   }]
-// }
-
-
-// const html = `
-// <tr data-for="person in people">
-//   <td>{person.id}</td>
-//   <td>{person.firstName}</td>
-//   <td>{person.lastName}</td>
-//   <td>{person.email}</td>
-//   <td>{person.gender}</td>
-//   <td>{person.ipAddress}</td>
-// </tr>`
-
-// const templateCompiled = template.compile(html)
-// const templateAssembled = template.assemble(templateCompiled)
-// console.log(templateAssembled(data));
-
-const DATA_PATH = 'content'
-const BUILD_PATH = 'public'
-const THEME_PATH = 'themes'
-const THEME_NAME = 'tale'
-const DATA_EXTENSION = '.md'
+const config = require('./../config.json')
 
 const getPath = (...paths) => {
   return path.join(process.cwd(), ...paths)
 }
 
-// const writeIndexPage = async (data) => {
-// const writePage = async (data, layout) => {
 const writePage = async (data) => {
   const pageName = `${data.layout}.html`
-  const layoutPath = getPath(THEME_PATH, THEME_NAME, pageName)
-  const exportPath = getPath(BUILD_PATH, data.permalink)
+  const layoutPath = getPath(config.layout, config.theme, pageName)
+  const exportPath = getPath(config.build, data.permalink)
 
   const html = await fs.readFile(layoutPath, 'utf-8')
   const templateCompiled = template.compile(html)
-  // const templateAssembled = template.assemble(templateCompiled, data.layout)
-
-  // await fs.writeFile(exportPath, templateAssembled(data), 'utf-8')
 
   await fs.writeFile(exportPath, template.execute(templateCompiled, data), 'utf-8')
 }
 
-// const writePosts = async (posts) => {
-//   const themePath = getPath(THEME_PATH, THEME_NAME, 'post.html')
-
-//   for (post of posts) {
-//     const postPath = getPath(BUILD_PATH, post.path)
-
-//     const html = await fs.readFile(themePath, 'utf-8')
-//     const templateCompiled = template.compile(html)
-//     const templateAssembled = template.assemble(templateCompiled)
-
-//     await fs.writeFile(postPath, templateAssembled({ post }))
-//   }
-// }
-
 const getVariableName = target => Object.keys(target)[0]
 
 const compileMarkdown = ({ config, content }) => {
-  return { ...config, content: md.render(content) }
+  return { ...config, content: content ? md.render(content) : '' }
+}
+
+const parseFrontmatter = (content) => {
+  return frontmatter.parse(content)
 }
 
 const writeIndexPage = async (data) => {
   console.log(data);
 }
 
-const getNavigation = (contents) => {
-  return contents.filter(content => content.layout === 'page')
-    .map(({ title, permalink }) => ({ title, permalink }))
+const writeContent = (content) => {
+  const { navigation, site } = content;
+
+  content.pages.forEach(page => {
+    writePage({ ...page, navigation, site })
+  })
 }
 
-const writeContent = (contents, navigation) => {
-  contents.forEach(content => {
-    writePage({ ...content, navigation })
-  })
+const buildContent = (result, page) => {
+  if (page.layout === 'page') {
+    const { title, permalink } = page
+    result.navigation.push({ title, permalink })
+  }
+
+  result.pages.push(page)
+
+  return result
 }
 
 const main = async () => {
   try {
-    const data = await getContent(path.join(process.cwd(), DATA_PATH), DATA_EXTENSION)
+    const site = {
+      site: {
+        title: config.title
+      },
+      pages: [],
+      navigation: []
+    }
+    const data = await getContent(getPath(config.data.path), config.data.extension)
 
-    const contents = await data.map(content => frontmatter.parse(content))
-      // .map(({ config, content }) => ({ ...config, content: md.render(content) }))
+    const content = await data.map(parseFrontmatter)
       .map(compileMarkdown)
-      .filter(page => page.content.trim().length !== 0)
-      // .map(writePage)
+      // .filter(page => page.content.trim().length !== 0)
+      // .filter(page => page.layout)
+      .reduce(buildContent, site)
 
-    const navigation = getNavigation(contents)
-    navigation.unshift({ title: 'Posts', permalink: 'index.html' })
+    // const navigation = getNavigation(contents)
+    // navigation.unshift({ title: 'Posts', permalink: 'index.html' })
 
-    writeContent(contents, navigation)
+    writeContent(content)
     // writeIndexPage(contents, navigation })
     // writePosts(posts)
 

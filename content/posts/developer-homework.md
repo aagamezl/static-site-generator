@@ -5,6 +5,10 @@ author: Álvaro José Agámez Licha
 overview: Developer Homework for Senior Backend position
 permalink: 57Blocks-developer-homework.html
 layout: post
+tags:
+- Casablanca
+- North by Northwest
+- The Man Who Wasn't There
 ---
 
 # Developer Homework

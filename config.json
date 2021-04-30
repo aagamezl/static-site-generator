@@ -1,0 +1,10 @@
+{
+  "data": {
+    "path": "content",
+    "pattern": "**/*.{md,html}"
+  },
+  "build": "public",
+  "layout": "layout",
+  "theme": "default",
+  "title": ""
+}

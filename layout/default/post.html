@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <nav class="nav">
+    <div class="nav-container">
+      <a href="https://github.com/aagamezl">
+        <h2 class="nav-title">aagamezl</h2>
+      </a>
+      <ul class="nav-menu">
+        <li data-for="item of navigation">
+          <a href="{item.permalink}">{item.title}</a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <main>
+    <div class="post">
+      <div class="post-info">
+        <span>Written by {author}</span><br />
+        <span data-if="date !== undefined">on <time datetime="{date}">{date}</time></span>
+      </div>
+
+      <h1 class="post-title">{title}</h1>
+
+      {content}
+
+    </div>
+  </main>
+
+  <footer>
+    <span>
+      <time datetime="2020-09-16 05:49:07 +0000">2020</time>
+      <span>{author}. Made with Love and Passion</span>
+      <a href="https://github.com/aagamezl" target="_blank">aagamezl</a>.
+    </span>
+  </footer>
+</body>
+
+</html>
