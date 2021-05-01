@@ -1,5 +1,5 @@
 const fs = require('fs').promises
-const { join } = require('path')
+const { basename, join } = require('path')
 
 const { getFiles } = require('./getFiles')
 
@@ -12,7 +12,7 @@ const getContent = async (path, pattern = '**/*.{md,html}') => {
       const filename = join(path, files[index])
       const content = await fs.readFile(filename, 'utf8')
 
-      result.push({ content, filename })
+      result.push({ content, filename: basename(filename) })
     } catch (error) {
       console.error(error)
     }

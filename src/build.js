@@ -24,7 +24,7 @@ const getPath = (...paths) => {
   return path.join(process.cwd(), ...paths)
 }
 
-const writePage = async (data) => {
+const writePageWithLayout = async (data) => {
   const pageName = `${data.layout}.html`
   const layoutPath = getPath(config.layout, config.theme, pageName)
   const exportPath = getPath(config.build, data.permalink)
@@ -32,7 +32,13 @@ const writePage = async (data) => {
   const html = await fs.readFile(layoutPath, 'utf-8')
   const templateCompiled = template.compile(html)
 
-  await fs.writeFile(exportPath, template.execute(templateCompiled, data), 'utf-8')
+  return await fs.writeFile(exportPath, template.execute(templateCompiled, data), 'utf-8')
+}
+
+const writePage = async (data) => {
+  const exportPath = getPath(config.build, data.permalink)
+
+  return await fs.writeFile(exportPath, data.content, 'utf-8')
 }
 
 const getVariableName = target => Object.keys(target)[0]
@@ -53,13 +59,22 @@ const writeContent = (content) => {
   const { navigation, site } = content;
 
   content.pages.forEach(page => {
-    writePage({ ...page, navigation, site })
+    if (!page.permalink) {
+      return
+    }
+
+    if (page.layout) {
+      return writePageWithLayout({ ...page, navigation, site })
+    }
+
+    return writePage({ ...page, navigation, site })
   })
 }
 
 const buildContent = (result, page) => {
-  if (page.layout === 'page') {
+  if (!page.layout || page.layout === 'page') {
     const { title, permalink } = page
+
     result.navigation.push({ title, permalink })
   }
 
@@ -77,12 +92,10 @@ const main = async () => {
       pages: [],
       navigation: []
     }
-    const data = await getContent(getPath(config.data.path), config.data.extension)
+    const data = await getContent(getPath(config.data.path), config.data.pattern)
 
     const content = await data.map(parseFrontmatter)
       .map(compileMarkdown)
-      // .filter(page => page.content.trim().length !== 0)
-      // .filter(page => page.layout)
       .reduce(buildContent, site)
 
     // const navigation = getNavigation(contents)

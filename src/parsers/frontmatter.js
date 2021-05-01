@@ -1,4 +1,6 @@
-const { basename } = require('path')
+const path = require('path')
+
+const { titleCase } = require('./../utils')
 
 const LISTS = ['categpries', 'tags']
 
@@ -9,14 +11,16 @@ const parse = (page) => {
 
   const [matches] = Array.from(page.content.matchAll(frontmatterBlockRegex))
 
-  if (page.content.trim().length === 0) {
-    return { config: undefined, content: '' }
-  }
+  // if (page.content.trim().length === 0) {
+  //   return { config: undefined, content: '' }
+  // }
 
+  // if the content don't have a frontmatter block
   if (!matches) {
     return {
       config: {
-        permalink: basename(page.filename)
+        permalink: page.filename,
+        title: page.title || titleCase(path.parse(page.filename).name)
       },
       content: page.content
     }
