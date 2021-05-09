@@ -1,5 +1,5 @@
 const parse = (markdown) => {
-  const frontmatterBlockRegex = /---([\s\S]+)---\n+?([\s\S]+)/gm
+  const frontmatterBlockRegex = /---([\s\S]+)---\n+?([\s\S]+)?/gm
   const frontmatterValuesRegex = /(?:(.+):(.+))/gm
 
   if (markdown.trim().length === 0) {
@@ -15,7 +15,7 @@ const parse = (markdown) => {
 
   return {
     config,
-    content: matches[2]
+    content: matches[2] || ''
   }
 }
 

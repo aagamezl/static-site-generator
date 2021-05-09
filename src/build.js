@@ -64,8 +64,8 @@ const getPath = (...paths) => {
 // const writeIndexPage = async (data) => {
 // const writePage = async (data, layout) => {
 const writePage = async (data) => {
-  const pageName = `${data.layout}.html`
-  const layoutPath = getPath(THEME_PATH, THEME_NAME, pageName)
+  const layoutPage = `${data.layout}.html`
+  const layoutPath = getPath(THEME_PATH, THEME_NAME, layoutPage)
   const exportPath = getPath(BUILD_PATH, data.permalink)
 
   const html = await fs.readFile(layoutPath, 'utf-8')
@@ -74,7 +74,7 @@ const writePage = async (data) => {
 
   // await fs.writeFile(exportPath, templateAssembled(data), 'utf-8')
 
-  await fs.writeFile(exportPath, template.execute(templateCompiled, data), 'utf-8')
+   await fs.writeFile(exportPath, template.execute(templateCompiled, data), 'utf-8')
 }
 
 // const writePosts = async (posts) => {
@@ -116,16 +116,16 @@ const main = async () => {
   try {
     const data = await getContent(path.join(process.cwd(), DATA_PATH), DATA_EXTENSION)
 
-    const contents = await data.map(content => frontmatter.parse(content))
-      // .map(({ config, content }) => ({ ...config, content: md.render(content) }))
+    const content = await data.map(content => frontmatter.parse(content))
+      // .map(({ config, c5ontent }) => ({ ...config, content: md.render(content) }))
       .map(compileMarkdown)
-      .filter(page => page.content.trim().length !== 0)
+      // .filter(page => page.content.trim().length !== 0)
+      .filter(page => page.layout !== undefined)
       // .map(writePage)
 
-    const navigation = getNavigation(contents)
-    navigation.unshift({ title: 'Posts', permalink: 'index.html' })
+    const navigation = getNavigation(content)
 
-    writeContent(contents, navigation)
+    writeContent(content, navigation)
     // writeIndexPage(contents, navigation })
     // writePosts(posts)
 

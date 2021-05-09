@@ -1,25 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{title}</title>
+
+  <!-- Begin Jekyll SEO tag v2.7.1 -->
+  <title>Introducing Tale | Tale</title>
 
   <!-- CSS -->
   <link rel="stylesheet" href="./css/main.css">
-  <link rel="stylesheet" href="./css/css">
-  <link rel="stylesheet" href="./css/code.css">
-
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.2/styles/default.min.css">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Libre+Baskerville:400,400i,700">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" sizes="32x32" href="/tale/assets/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/tale/assets/favicon-16x16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/tale/assets/apple-touch-icon.png">
 </head>
+
 <body>
   <nav class="nav">
     <div class="nav-container">
-      <a href="https://github.com/aagamezl" target="_blank">
-        <h2 class="nav-title">aagamezl</h2>
+      <a href="/tale/">
+        <h2 class="nav-title">Tale</h2>
       </a>
-      <ul class="nav-menu">
+      <ul>
         <li data-for="item of navigation">
           <a href="{item.permalink}">{item.title}</a>
         </li>
@@ -30,30 +35,30 @@
   <main>
     <div class="post">
       <div class="post-info">
-        <span>Written by {author}</span><br/>
-        <span data-if="date !== undefined">on <time datetime="{date}">{date}</time></span>
+        <div>Written by {author}</div>
+        <span data-if="date !== undefined">on </span><time datetime="{date}">{date}</time>
       </div>
 
       <h1 class="post-title">{title}</h1>
+      <!-- <div class="post-line"></div> -->
 
-      {content}
-
+      <p>{content}</p>
     </div>
 
     <div class="pagination">
-      <!-- <a href="#" class="left arrow">←</a>
-      <a href="#" class="right arrow">→</a> -->
-
+      <a href="/tale/2021-04-30/managing-excerpt" class="left arrow">&#8592;</a>
+      <a href="/tale/2017-03-16/example-content" class="right arrow">&#8594;</a>
       <a href="#" class="top">Top</a>
     </div>
-
-    <footer>
-      <span>
-        <time datetime="2020-09-16 05:49:07 +0000">2020</time>
-        <span>Álvaro Agámez. Made with Love and Craziness</span>
-        <a href="https://github.com/aagamezl" target="_blank">aagamezl</a>.
-      </span>
-    </footer>
   </main>
+
+  <footer>
+    <span>
+      <time datetime="2020-09-16 05:49:07 +0000">2020</time>
+      <span>Álvaro Agámez. Made with Love and Craziness</span>
+      <a href="https://github.com/aagamezl" target="_blank">aagamezl</a>.
+    </span>
+  </footer>
 </body>
+
 </html>

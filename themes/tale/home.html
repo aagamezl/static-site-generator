@@ -1,10 +1,11 @@
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>Home | Tale</title>
+  <title>Sticky Posts | Tale</title>
 
   <!-- CSS -->
   <link rel="stylesheet" href="./css/main.css">
@@ -14,11 +15,6 @@
   <link rel="icon" type="image/png" sizes="32x32" href="/tale/assets/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/tale/assets/favicon-16x16.png">
   <link rel="apple-touch-icon" sizes="180x180" href="/tale/assets/apple-touch-icon.png">
-
-  <!-- RSS -->
-
-
-  <!-- Google Analytics-->
 </head>
 
 <body>
@@ -27,7 +23,7 @@
       <a href="/tale/">
         <h2 class="nav-title">Tale</h2>
       </a>
-      <ul class="nav-menu">
+      <ul>
         <li data-for="item of navigation">
           <a href="{item.permalink}">{item.title}</a>
         </li>
@@ -36,23 +32,26 @@
   </nav>
 
   <main>
-    <div class="post-list">
-      <div class="post-item" data-for="post of posts">
-        <time datetime="{date}" class="post-time">{date}</time>
-        <a href="{path}">
-          <h1 class="post-title">{title}</h1>
+    <div class="catalogue">
+      <div class="catalogue-item" data-for="post of posts">
+        <time datetime="{post.date}" class="catalogue-time">{post.date}</time>
+        <a href="{post.permalink}">
+          <h1 class="catalogue-title">{post.title}</h1>
         </a>
-        <p class="post-overview">{overview}</p>
+
+        <p>{post.overview}</p>
       </div>
     </div>
 
     <div class="pagination">
+      <a href="/tale/page2" class="right arrow">→</a>
+      <span>1</span>
     </div>
   </main>
 
   <footer>
     <span>
-      © <time datetime="2020-09-16 05:49:07 +0000">2020</time> Chester How. Made with Jekyll using the <a
+      © <time datetime="2021-05-03 08:35:54 +0000">2021</time> Chester How. Made with Jekyll using the <a
         href="https://github.com/chesterhow/tale/">Tale</a> theme.
     </span>
   </footer>

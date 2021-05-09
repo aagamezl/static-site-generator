@@ -1,8 +1,8 @@
 ---
+layout: page
 title: About
 author: Chester
 permalink: about.html
-layout: page
 ---
 
 A friend of mine writes short stories. One sunny day, I asked if he wanted a website to showcase his works and he agreed. I decided to use GitHub Pages to host his site. That way he wouldn't have to buy a domain and a server.

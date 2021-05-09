@@ -1,29 +1,31 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Changing the GNOME Shell login background</title>
+
+  <!-- Begin Jekyll SEO tag v2.7.1 -->
+  <title>Introducing Tale | Tale</title>
 
   <!-- CSS -->
   <link rel="stylesheet" href="./css/main.css">
-  <link rel="stylesheet" href="./css/css">
-  <link rel="stylesheet" href="./css/code.css">
-
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.2/styles/default.min.css">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Libre+Baskerville:400,400i,700">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" sizes="32x32" href="/tale/assets/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/tale/assets/favicon-16x16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/tale/assets/apple-touch-icon.png">
 </head>
+
 <body>
   <nav class="nav">
     <div class="nav-container">
-      <a href="https://github.com/aagamezl" target="_blank">
-        <h2 class="nav-title">aagamezl</h2>
+      <a href="/tale/">
+        <h2 class="nav-title">Tale</h2>
       </a>
-      <ul class="nav-menu">
+      <ul>
         <li>
-          <a href="index.html">Posts</a>
-        </li>
-<li>
           <a href="about.html">About</a>
         </li>
       </ul>
@@ -33,13 +35,14 @@
   <main>
     <div class="post">
       <div class="post-info">
-        <span>Written by Álvaro José Agámez Licha</span><br/>
-        <span>on <time datetime="April 13, 2020">April 13, 2020</time></span>
+        <div>Written by Álvaro José Agámez Licha</div>
+        <span>on </span><time datetime="April 13, 2020">April 13, 2020</time>
       </div>
 
       <h1 class="post-title">Changing the GNOME Shell login background</h1>
+      <!-- <div class="post-line"></div> -->
 
-      <p>The &quot;problem&quot; is that I was just tired of the boring purple Ubuntu's background login screen, I REALLY was tired of it, so I asked myself, how can I change the login screen background?, and the quick answer was, no you can't change it, the long answer was, well, you can change it, but this involves dealing with the GNOME Shell CSS.</p>
+      <p><p>The &quot;problem&quot; is that I was just tired of the boring purple Ubuntu's background login screen, I REALLY was tired of it, so I asked myself, how can I change the login screen background?, and the quick answer was, no you can't change it, the long answer was, well, you can change it, but this involves dealing with the GNOME Shell CSS.</p>
 <p>Changing your GNOME Shell login background is not complicated if you know what to change and where to make the change. The change consists of modifying the CSS file with the desired image, but in my case, I wanted to change this image every time that I restart my laptop, and I want to download the daily <a href="https://www.bing.com/">Bing</a> image to use it as background.</p>
 <p>I'm using Ubuntu 19.10, so to change the login background I need to modify the file <code>/usr/share/gnome-shell/theme/Yaru/gnome-shell.css</code>, if you are using another distro or Ubuntu version, please search for the correct path on internet, but my path can give you an idea of where to start looking.</p>
 <p>Inside this CSS file, we need to modify the selector <code>#lockDialogGroup</code> from</p>
@@ -149,24 +152,22 @@ image_name=$(<span class="hljs-built_in">echo</span> <span class="hljs-variable"
 </code></pre>
 <p>Ok, this is all folks, I hope you enjoyed and learned how I did by solving this &quot;problem&quot; I had with Ubuntu.</p>
 <p>If you have some questions, please send me a message on <a href="https://twitter.com/aagamezl">Twitter</a>.</p>
-
-
+</p>
     </div>
 
     <div class="pagination">
-      <!-- <a href="#" class="left arrow">←</a>
-      <a href="#" class="right arrow">→</a> -->
-
+      <a href="/tale/2021-04-30/managing-excerpt" class="left arrow">&#8592;</a>
+      <a href="/tale/2017-03-16/example-content" class="right arrow">&#8594;</a>
       <a href="#" class="top">Top</a>
     </div>
-
-    <footer>
-      <span>
-        <time datetime="2020-09-16 05:49:07 +0000">2020</time>
-        <span>Álvaro Agámez. Made with Love and Craziness</span>
-        <a href="https://github.com/aagamezl" target="_blank">aagamezl</a>.
-      </span>
-    </footer>
   </main>
+
+  <footer>
+    <span>
+      &copy; <time datetime="2021-05-03 08:35:54 +0000">2021</time> Chester How. Made with Jekyll using the <a
+        href="https://github.com/chesterhow/tale/">Tale</a> theme.
+    </span>
+  </footer>
 </body>
+
 </html>
