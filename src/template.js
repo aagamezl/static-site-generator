@@ -1,50 +1,66 @@
-const { forParser, ifParser } = require('./parsers')
+const get = (ctx, path) => {
+  path = path.pop ? path : path.split('.')
+  ctx = ctx[path.shift()]
+  ctx = ctx != null ? ctx : ''
 
-const placeholderRegex = /({.+?})/gm
-
-/**
- * Generate a function representing the template literal for the complete
- * cpmpiled template code
- *
- * @param {string} templateLiteral Template code
- * @param {string} [params = 'data'] Param name for the generated template
- * function
- * @returns {Function}
- */
-const assemble = (templateLiteral, params = 'data') => {
-  return new Function(params, 'return `' + templateLiteral + '`;')
+  return (0 in path) ? get(ctx, path) : ctx
 }
 
-const execute = (templateCompiled, data) => {
-  return assemble(templateCompiled, `{ ${Object.keys(data).join(', ')} }`)(data)
-}
+const blockregex = /([\s\S]*?)({{((\/)|(\^)|#)(.*?)}}|$)/g
+const valueregex = /{{{(.*?)}}}|{{(!?)(&?)(>?)(.*?)}}/g
 
-/**
- * Compile a template, expanding all the engine expressions
- *
- * @param {string} html
- * @returns {string}
- */
-const compile = (template) => {
-  let html = forParser.compile(fixPlaceholders(template))
-  html = ifParser.compile(html)
+const template = (html, self, parent, invert) => {
+  var output = ''
+  var i
 
-  return html
-}
+  self = Array.isArray(self) ? self : (self ? [self] : [])
+  self = invert ? ((0 in self) ? [] : [1]) : self
 
-/**
- * Fix the expression placeholders, adding the $ character to complete the
- * template literal
- *
- * @param {string} html
- * @returns {string}
- */
-const fixPlaceholders = (html) => {
-  return html.replace(placeholderRegex, '$$$1')
+  for (i = 0; i < self.length; i++) {
+    let childCode = ''
+    let depth = 0
+    let inverted
+    let ctx = (typeof self[i] === 'object') ? self[i] : {}
+    ctx = Object.assign({}, parent, ctx)
+    ctx[''] = { '': self[i] }
+
+    html.replace(blockregex, (match, code, y, z, close, invert, name) => {
+        if (!depth) {
+          output += code.replace(valueregex, (match, raw, comment, isRaw, partial, name) => {
+              return raw ? get(ctx, raw)
+                : isRaw ? get(ctx, name)
+                  : partial ? template(get(ctx, name), ctx)
+                    : !comment ? get(ctx, name)
+                      : ''
+            }
+          )
+          inverted = invert
+        } else {
+          childCode += depth && !close || depth > 1 ? match : code
+        }
+
+        if (close) {
+          if (!--depth) {
+            name = get(ctx, name)
+            if (/^f/.test(typeof name)) {
+              output += name.call(ctx, childCode, function (template) {
+                return template(template, ctx)
+              })
+            } else {
+              output += template(childCode, name, ctx, inverted)
+            }
+            childCode = ''
+          }
+        } else {
+          ++depth
+        }
+      }
+    )
+  }
+
+  return output
 }
 
 module.exports = {
-  assemble,
-  compile,
-  execute
+  template
 }

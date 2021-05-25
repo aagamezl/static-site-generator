@@ -1,10 +1,10 @@
 ---
+layout: post
 title: Changing the GNOME Shell login background
 date: April 13, 2020
 author: Álvaro José Agámez Licha
 overview: The "problem" is that I was just tired of the boring purple Ubuntu's background login screen, I REALLY was tired of it, so I asked myself, how can I change the login screen background?, and the quick answer was, no you can't change it, the long answer was, well, you can change it, but this involves dealing with the GNOME Shell CSS.
 permalink: changing-the-gnome-shell-login-background.html
-layout: post
 tags:
 - gnome
 - bash

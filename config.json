@@ -5,6 +5,10 @@
   },
   "build": "public",
   "layout": "layout",
-  "theme": "default",
-  "title": ""
+  "theme": "tale",
+  "paginate": 5,
+  "site": {
+    "title": "Code Bites",
+    "author": "Álvaro José Agámez Licha"
+  }
 }

@@ -1,10 +1,10 @@
 ---
+layout: post
 title: 57Block Developer Homework
 date: April 05, 2021
 author: Álvaro José Agámez Licha
 overview: Developer Homework for Senior Backend position
 permalink: 57Blocks-developer-homework.html
-layout: post
 tags:
 - Casablanca
 - North by Northwest
