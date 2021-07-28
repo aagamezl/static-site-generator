@@ -4,7 +4,7 @@ const path = require('path')
 const handlebars = require('handlebars')
 const hljs = require('highlight.js')
 const md = require('markdown-it')('commonmark', {
-  highlight: function (str, lang) {
+  highlight: (str, lang) => {
     if (lang && hljs.getLanguage(lang)) {
       try {
         return `<pre class="hljs"><code>${hljs.highlight(str, { language: lang, ignoreIllegals: true }).value}</code></pre>`
@@ -116,7 +116,6 @@ const main = async () => {
       .filter(page => page.layout !== undefined)
       .sort(sortContent)
       .reduce(buildContent, {})
-
 
     writeContent({ ...site, ...config.site })
   } catch (error) {

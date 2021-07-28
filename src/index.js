@@ -1,7 +1,11 @@
 const build = require('./build')
-const template = require('./template')
+const content = require('./content')
+const getFiles = require('./getFiles')
+const utils = require('./utils')
 
 module.exports = {
   build,
-  template
+  content,
+  getFiles,
+  utils,
 }

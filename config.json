@@ -7,6 +7,11 @@
   "layout": "layout",
   "theme": "tale",
   "paginate": 5,
+  "assets": [
+    "css",
+    "js",
+    "images"
+  ],
   "site": {
     "title": "Code Bites",
     "author": "Álvaro José Agámez Licha"
