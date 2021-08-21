@@ -4,17 +4,22 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "http-server"
+    "build": "node index.js",
+    "build:watch": "node index.js --watch"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "chokidar": "^3.5.2",
     "highlight.js": "^10.7.2",
     "markdown-it": "^12.0.4"
   },
   "dependencies": {
+    "@devnetic/utils": "^1.2.1",
+    "fs-extra": "^10.0.0",
     "glob": "^7.1.6",
+    "gray-matter": "^4.0.3",
     "handlebars": "^4.7.7"
   }
 }

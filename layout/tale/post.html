@@ -9,6 +9,7 @@
 
   <!-- CSS -->
   <link rel="stylesheet" href="./css/main.css">
+  <link rel="stylesheet" href="./css/post.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.2/styles/default.min.css">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Libre+Baskerville:400,400i,700">
 
@@ -25,25 +26,25 @@
         <h2 class="nav-title">aagamezl</h2>
       </a>
       <ul>
-        {{#navigation}}
+        {{#each navigation}}
         <li>
           <a href="{{permalink}}">{{title}}</a>
         </li>
-        {{/navigation}}
+        {{/each}}
       </ul>
     </div>
   </nav>
 
   <main>
     <div class="post">
-      {{#author}}
+      {{#if author}}
       <div class="post-info">
         <div>Written by {{author}}</div>
-        {{#date}}
-        <span>on </span><time datetime="{{date}}">{{date}}</time>
-        {{/date}}
+        {{#if date}}
+        <span>on </span><time datetime="{{date}}">{{formatDate date}}</time>
+        {{/if}}
       </div>
-      {{/author}}
+      {{/if}}
 
       <h1 class="post-title">{{title}}</h1>
 

@@ -35,23 +35,23 @@
 
   <main>
     <div class="catalogue">
-      {{#site.posts}}
+      {{#each site.posts}}
       <div class="catalogue-item">
-        <time datetime="{{date}}" class="catalogue-time">{{date}}</time>
+        <time datetime="{{date}}" class="catalogue-time">{{formatDate date}}</time>
         <a href="{{permalink}}">
           <h1 class="catalogue-title">{{title}}</h1>
         </a>
 
         <p>{{{overview}}}</p>
       </div>
-      {{/site.posts}}
+      {{/each}}
     </div>
   </main>
 
   <footer>
     <span>
       <time datetime="2020-09-16 05:49:07 +0000">2020</time>
-      <span>{{site.author}}. Made with Love and Passion</span>
+      <span>© {{site.author}}. Made with Love and Passion</span>
       <a href="https://github.com/aagamezl" target="_blank">aagamezl</a>.
     </span>
   </footer>

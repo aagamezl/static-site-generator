@@ -1,8 +1,11 @@
-const fs = require('fs').promises
+const fs = require('fs-extra')
 const path = require('path')
 
 const handlebars = require('handlebars')
 const hljs = require('highlight.js')
+const matter = require('gray-matter')
+const utils = require('@devnetic/utils')
+
 const md = require('markdown-it')('commonmark', {
   highlight: (str, lang) => {
     if (lang && hljs.getLanguage(lang)) {
@@ -16,53 +19,28 @@ const md = require('markdown-it')('commonmark', {
 })
 
 const { getContent } = require('./content')
-const { frontmatter } = require('./parsers')
 
 const config = require('./../config.json')
 
-const getPath = (...paths) => {
-  return path.join(process.cwd(), ...paths)
-}
+handlebars.registerHelper('formatDate', function (value) {
+  return utils.dateFormat(new Date(value), 'YYYY-MM-dd HH:mm:ss')
+});
 
-const writePageWithLayout = async (data) => {
-  const layoutName = `${data.layout}.html`
-  const layoutPath = getPath(config.layout, config.theme, layoutName)
-  const exportPath = getPath(config.build, data.permalink)
+const build = async () => {
+  try {
+    const data = await getContent(getPath(config.data.path), config.data.pattern)
 
-  const html = await fs.readFile(layoutPath, 'utf-8')
+    const site = await data.map(parseFrontmatter)
+      .map(compileMarkdown)
+      .filter(page => page.layout !== undefined)
+      .sort(sortContent)
+      .reduce(buildContent, {})
 
-  return await fs.writeFile(exportPath, handlebars.compile(html)(data), 'utf-8')
-}
-
-const writePage = async (data) => {
-  const exportPath = getPath(config.build, data.permalink)
-
-  return await fs.writeFile(exportPath, data.content, 'utf-8')
-}
-
-const compileMarkdown = ({ config, content, type, date }) => {
-  return { ...config, type, content: content ? md.render(content) : '', date }
-}
-
-const parseFrontmatter = (content) => {
-  return frontmatter.parse(content)
-}
-
-const writeContent = (site) => {
-  const { navigation, pages, posts } = site
-  const content = [...pages, ...posts]
-
-  content.forEach(page => {
-    if (!page.permalink) {
-      return
-    }
-
-    if (page.layout) {
-      return writePageWithLayout({ ...page, navigation, site })
-    }
-
-    return writePage({ ...page, navigation, site })
-  })
+    writeContent({ ...site, ...config.site })
+    copyAssets(config.assets)
+  } catch (error) {
+    console.error(error);
+  }
 }
 
 const buildContent = (result, item) => {
@@ -103,24 +81,82 @@ const buildContent = (result, item) => {
   return result
 }
 
+const copyAssets = async (assets) => {
+  assets.forEach(async (asset) => {
+    try {
+      const assetsPath = getPath(config.layout, config.theme, asset)
+      const exportPath = getPath(config.build, asset)
+
+      await fs.copy(assetsPath, exportPath)
+    } catch (error) {
+      if (error.code === 'ENOENT') {
+        console.info(`No asset [${asset}] exists.`)
+      } else {
+        console.error(error.message)
+      }
+    }
+  })
+}
+
+const compileMarkdown = ({ data, content, type, date }) => {
+  data.date = data.date === undefined ? date : data.date
+
+  return { ...data, type, content: content ? md.render(content) : '' }
+}
+
+const getPath = (...paths) => {
+  return path.join(process.cwd(), ...paths)
+}
+
+const parseFrontmatter = (content) => {
+  return matter(content)
+}
+
 const sortContent = (a, b) => {
   return new Date(a.date).getTime() - new Date(b.date).getTime()
 }
 
-const main = async () => {
-  try {
-    const data = await getContent(getPath(config.data.path), config.data.pattern)
+const writeContent = (site) => {
+  const { navigation, pages, posts } = site
+  const content = [...pages, ...posts]
 
-    const site = await data.map(parseFrontmatter)
-      .map(compileMarkdown)
-      .filter(page => page.layout !== undefined)
-      .sort(sortContent)
-      .reduce(buildContent, {})
+  content.forEach(page => {
+    if (!page.permalink) {
+      return
+    }
 
-    writeContent({ ...site, ...config.site })
-  } catch (error) {
-    console.error(error);
-  }
+    if (page.layout) {
+      return writePageWithLayout({ ...page, navigation, site })
+    }
+
+    return writePage({ ...page, navigation, site })
+  })
 }
 
-main()
+const writePage = async (data) => {
+  const exportPath = getPath(config.build, data.permalink)
+
+  return await fs.writeFile(exportPath, data.content, 'utf-8')
+}
+
+const writePageWithLayout = async (data) => {
+  const layoutName = `${data.layout}.html`
+  const layoutPath = getPath(config.layout, config.theme, layoutName)
+  const exportPath = getPath(config.build, data.permalink)
+
+  const html = await fs.readFile(layoutPath, 'utf-8')
+
+  return await fs.writeFile(exportPath, handlebars.compile(html)(data), 'utf-8')
+}
+
+module.exports = {
+  build,
+  buildContent,
+  compileMarkdown,
+  getPath,
+  parseFrontmatter,
+  sortContent,
+  writeContent,
+  writePage,
+  writePageWithLayout
+}
