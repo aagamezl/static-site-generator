@@ -5,6 +5,7 @@ const handlebars = require('handlebars')
 const hljs = require('highlight.js')
 const matter = require('gray-matter')
 const utils = require('@devnetic/utils')
+const { prompt } = require('@devnetic/cli')
 
 const md = require('markdown-it')('commonmark', {
   highlight: (str, lang) => {
@@ -18,9 +19,8 @@ const md = require('markdown-it')('commonmark', {
   }
 })
 
+const { getConfig } = require('./utils')
 const { getContent } = require('./content')
-
-const config = require('./../config.json')
 
 handlebars.registerHelper('formatDate', function (value) {
   return utils.dateFormat(new Date(value), 'YYYY-MM-dd HH:mm:ss')
@@ -28,6 +28,7 @@ handlebars.registerHelper('formatDate', function (value) {
 
 const build = async () => {
   try {
+    const config = getConfig()
     const data = await getContent(getPath(config.data.path), config.data.pattern)
 
     const site = await data.map(parseFrontmatter)
@@ -36,8 +37,8 @@ const build = async () => {
       .sort(sortContent)
       .reduce(buildContent, {})
 
-    writeContent({ ...site, ...config.site })
-    copyAssets(config.assets)
+    writeContent({ ...site, ...config.site }, config)
+    copyAssets(config.assets, config)
   } catch (error) {
     console.error(error);
   }
@@ -81,11 +82,11 @@ const buildContent = (result, item) => {
   return result
 }
 
-const copyAssets = async (assets) => {
+const copyAssets = async (assets, config) => {
   assets.forEach(async (asset) => {
     try {
-      const assetsPath = getPath(config.layout, config.theme, asset)
-      const exportPath = getPath(config.build, asset)
+      const assetsPath = getPath('themes', config.theme, asset)
+      const exportPath = getPath(config.public, asset)
 
       await fs.copy(assetsPath, exportPath)
     } catch (error) {
@@ -108,6 +109,56 @@ const getPath = (...paths) => {
   return path.join(process.cwd(), ...paths)
 }
 
+const createSite = async () => {
+  const templateConfigPath = path.resolve(__dirname, '../template/config.json')
+  const exportConfigPath = getPath('config.json')
+
+  const config = getConfig(templateConfigPath)
+
+  const questions = [{
+    type: 'input',
+    name: 'content',
+    message: "What's the content directory? ",
+  }, {
+    type: 'input',
+    name: 'public',
+    message: "What's the public directory? ",
+  }, {
+    type: 'input',
+    name: 'theme',
+    message: "What's the theme? ",
+  }, {
+    type: 'input',
+    name: 'paginate',
+    message: "What's the paginate amount ",
+  }, {
+    type: 'input',
+    name: 'siteTitle',
+    message: "What's the site title? ",
+  }, {
+    type: 'input',
+    name: 'author',
+    message: "What's the author name? ",
+  }]
+
+  const answers = await prompt(questions)
+
+  config.data.path = answers.content || config.data.path
+  config.public = answers.public || config.public
+  config.theme = answers.theme || config.theme
+  config.paginate = Number(answers.paginate || config.paginate)
+  config.site.title = answers.siteTitle
+  config.site.author = answers.author
+
+  await fs.writeFile(exportConfigPath, JSON.stringify(config, null, 2), 'utf-8')
+
+  await fs.ensureDir(config.data.path)
+  await fs.ensureDir(path.join(config.data.path, 'pages'))
+  await fs.ensureDir(path.join(config.data.path, 'posts'))
+  await fs.ensureDir(config.public)
+  await fs.ensureDir(getPath('themes', config.theme))
+}
+
 const parseFrontmatter = (content) => {
   return matter(content)
 }
@@ -116,7 +167,7 @@ const sortContent = (a, b) => {
   return new Date(a.date).getTime() - new Date(b.date).getTime()
 }
 
-const writeContent = (site) => {
+const writeContent = (site, config) => {
   const { navigation, pages, posts } = site
   const content = [...pages, ...posts]
 
@@ -126,23 +177,23 @@ const writeContent = (site) => {
     }
 
     if (page.layout) {
-      return writePageWithLayout({ ...page, navigation, site })
+      return writePageWithLayout({ ...page, navigation, site }, config)
     }
 
-    return writePage({ ...page, navigation, site })
+    return writePage({ ...page, navigation, site }, config)
   })
 }
 
-const writePage = async (data) => {
-  const exportPath = getPath(config.build, data.permalink)
+const writePage = async (data, config) => {
+  const exportPath = getPath(config.public, data.permalink)
 
   return await fs.writeFile(exportPath, data.content, 'utf-8')
 }
 
-const writePageWithLayout = async (data) => {
+const writePageWithLayout = async (data, config) => {
   const layoutName = `${data.layout}.html`
-  const layoutPath = getPath(config.layout, config.theme, layoutName)
-  const exportPath = getPath(config.build, data.permalink)
+  const layoutPath = getPath('themes', config.theme, layoutName)
+  const exportPath = getPath(config.public, data.permalink)
 
   const html = await fs.readFile(layoutPath, 'utf-8')
 
@@ -153,6 +204,7 @@ module.exports = {
   build,
   buildContent,
   compileMarkdown,
+  createSite,
   getPath,
   parseFrontmatter,
   sortContent,
