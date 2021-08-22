@@ -1,5 +1,3 @@
-const { readdir } = require('fs').promises
-
 const glob = require('glob')
 
 const getFiles = async (dir, pattern) => {

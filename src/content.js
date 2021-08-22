@@ -1,25 +1,31 @@
 const fs = require('fs').promises
-const { basename, dirname, join } = require('path')
+const path = require('path')
 
 const { getFiles } = require('./getFiles')
 
-const getContent = async (path, pattern = '**/*.{md,html}') => {
-  const files = await getFiles(path, pattern)
+const getContent = async (filename) => {
+  const segments = filename.split(path.sep)
+  const type = segments[segments.length - 2]
+  const content = await fs.readFile(filename, 'utf8')
+  const { mtime } = await fs.stat(filename)
+
+  return {
+    content,
+    type,
+    filename: path.basename(filename),
+    date: mtime
+  }
+}
+
+const getData = async (contentPath, pattern = '**/*.{md,html}') => {
+  const files = await getFiles(contentPath, pattern)
 
   const result = []
-  for (let index = 0, length = files.length; index < length; index ++) {
+  for (const file of files) {
     try {
-      const filename = join(path, files[index])
-      const type = dirname(files[index])
-      const content = await fs.readFile(filename, 'utf8')
-      const { mtime } = await fs.stat(filename)
+      const filename = path.join(contentPath, file)
 
-      result.push({
-        content,
-        type,
-        filename: basename(filename),
-        date: mtime
-      })
+      result.push(await getContent(filename))
     } catch (error) {
       console.error(error)
     }
@@ -29,5 +35,6 @@ const getContent = async (path, pattern = '**/*.{md,html}') => {
 }
 
 module.exports = {
-  getContent
+  getContent,
+  getData
 }

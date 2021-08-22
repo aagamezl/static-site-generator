@@ -15,21 +15,24 @@ const md = require('markdown-it')('commonmark', {
       } catch (__) { }
     }
 
-    return '<pre class="hljs"><code>' + md.utils.escapeHtml(str) + '</code></pre>';
+    return '<pre class="hljs"><code>' + md.utils.escapeHtml(str) + '</code></pre>'
   }
 })
 
 const { getConfig } = require('./utils')
-const { getContent } = require('./content')
+const { getContent, getData } = require('./content')
+const { THEMES_PATH } = require('./constants')
 
 handlebars.registerHelper('formatDate', function (value) {
   return utils.dateFormat(new Date(value), 'YYYY-MM-dd HH:mm:ss')
-});
+})
 
-const build = async () => {
+const build = async (file, stats) => {
   try {
     const config = getConfig()
-    const data = await getContent(getPath(config.data.path), config.data.pattern)
+    const data = file === undefined
+      ? await getData(getPath(config.data.path), config.data.pattern)
+      : [await getContent(file)]
 
     const site = await data.map(parseFrontmatter)
       .map(compileMarkdown)
@@ -40,7 +43,7 @@ const build = async () => {
     writeContent({ ...site, ...config.site }, config)
     copyAssets(config.assets, config)
   } catch (error) {
-    console.error(error);
+    console.error(error)
   }
 }
 
@@ -85,7 +88,7 @@ const buildContent = (result, item) => {
 const copyAssets = async (assets, config) => {
   assets.forEach(async (asset) => {
     try {
-      const assetsPath = getPath('themes', config.theme, asset)
+      const assetsPath = getPath(THEMES_PATH, config.theme, asset)
       const exportPath = getPath(config.public, asset)
 
       await fs.copy(assetsPath, exportPath)
@@ -118,27 +121,27 @@ const createSite = async () => {
   const questions = [{
     type: 'input',
     name: 'content',
-    message: "What's the content directory? ",
+    message: "What's the content directory? "
   }, {
     type: 'input',
     name: 'public',
-    message: "What's the public directory? ",
+    message: "What's the public directory? "
   }, {
     type: 'input',
     name: 'theme',
-    message: "What's the theme? ",
+    message: "What's the theme? "
   }, {
     type: 'input',
     name: 'paginate',
-    message: "What's the paginate amount ",
+    message: "What's the paginate amount "
   }, {
     type: 'input',
     name: 'siteTitle',
-    message: "What's the site title? ",
+    message: "What's the site title? "
   }, {
     type: 'input',
     name: 'author',
-    message: "What's the author name? ",
+    message: "What's the author name? "
   }]
 
   const answers = await prompt(questions)
@@ -156,7 +159,7 @@ const createSite = async () => {
   await fs.ensureDir(path.join(config.data.path, 'pages'))
   await fs.ensureDir(path.join(config.data.path, 'posts'))
   await fs.ensureDir(config.public)
-  await fs.ensureDir(getPath('themes', config.theme))
+  await fs.ensureDir(getPath(THEMES_PATH, config.theme))
 }
 
 const parseFrontmatter = (content) => {
@@ -168,7 +171,7 @@ const sortContent = (a, b) => {
 }
 
 const writeContent = (site, config) => {
-  const { navigation, pages, posts } = site
+  const { navigation = [], pages = [], posts } = site
   const content = [...pages, ...posts]
 
   content.forEach(page => {
@@ -192,7 +195,7 @@ const writePage = async (data, config) => {
 
 const writePageWithLayout = async (data, config) => {
   const layoutName = `${data.layout}.html`
-  const layoutPath = getPath('themes', config.theme, layoutName)
+  const layoutPath = getPath(THEMES_PATH, config.theme, layoutName)
   const exportPath = getPath(config.public, data.permalink)
 
   const html = await fs.readFile(layoutPath, 'utf-8')
