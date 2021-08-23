@@ -50,18 +50,12 @@ footer span {
 h1, h2, h3, h4, h5, h6 {
   color: #353535;
   font-family: "Helvetica Neue", "Segoe UI", Helvetica, Arial, sans-serif;
-  line-height: normal;
+  line-height: normal
 }
 
 a {
   color: #4a9ae1;
   text-decoration: none
-}
-
-img {
-  display: block;
-  max-width: 100%;
-  width: 100%;
 }
 
 /* Navigation */

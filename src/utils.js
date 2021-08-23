@@ -18,6 +18,10 @@ const getConfig = (configPath, parse = true) => {
   }
 }
 
+const getPath = (...paths) => {
+  return path.join(process.cwd(), ...paths)
+}
+
 const isObject = (variable) => {
   return Object.prototype.toString.call(variable) === '[object Object]'
 }
@@ -28,6 +32,7 @@ const titleCase = (value) => {
 
 module.exports = {
   getConfig,
+  getPath,
   isObject,
   titleCase
 }

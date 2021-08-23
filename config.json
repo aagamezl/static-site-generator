@@ -3,7 +3,7 @@
     "path": "content",
     "pattern": "**/*.{md,html}"
   },
-  "public": "public",
+  "build": "public",
   "theme": "tale",
   "paginate": 5,
   "assets": [
