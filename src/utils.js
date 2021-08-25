@@ -3,6 +3,8 @@ const path = require('path')
 
 const { format } = require('@devnetic/cli')
 
+const { THEMES_PATH } = require('./constants')
+
 const getConfig = (configPath, parse = true) => {
   try {
     configPath = configPath || path.resolve(process.cwd(), './config.json')
@@ -18,6 +20,20 @@ const getConfig = (configPath, parse = true) => {
   }
 }
 
+const getPath = (...paths) => {
+  return path.join(process.cwd(), ...paths)
+}
+
+const getExportPath = (filename, config) => {
+  const separator = path.sep
+
+  const exportPath = filename.replace(process.cwd(), '')
+    .replace(`${separator}${THEMES_PATH}`, '')
+    .replace(`${separator}${config.theme}`, '')
+
+  return getPath(config.build, exportPath)
+}
+
 const isObject = (variable) => {
   return Object.prototype.toString.call(variable) === '[object Object]'
 }
@@ -28,6 +44,8 @@ const titleCase = (value) => {
 
 module.exports = {
   getConfig,
+  getExportPath,
+  getPath,
   isObject,
   titleCase
 }
