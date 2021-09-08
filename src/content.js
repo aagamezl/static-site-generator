@@ -3,7 +3,7 @@ const path = require('path')
 
 const { getFiles } = require('./getFiles')
 
-const getData = async (contentPath, pattern = '**/*.{md,html}') => {
+const getData = async (contentPath, pattern) => {
   const files = await getFiles(contentPath, pattern)
 
   const result = []

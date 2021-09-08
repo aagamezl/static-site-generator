@@ -24,6 +24,18 @@ const getPath = (...paths) => {
   return path.join(process.cwd(), ...paths)
 }
 
+const getGlobPattern = (items) => {
+  const normalized = items.reduce((pattern, item) => {
+    if (item.startsWith('.')) {
+      return pattern.concat(item.slice(1))
+    }
+
+    return pattern.concat(item)
+  }, [])
+
+  return `**/*.{${normalized.join(',')}}`
+}
+
 const getExportPath = (filename, config) => {
   const separator = path.sep
 
@@ -32,6 +44,16 @@ const getExportPath = (filename, config) => {
     .replace(`${separator}${config.theme}`, '')
 
   return getPath(config.build, exportPath)
+}
+
+const isAssetFile = (assets, filename) => {
+  return assets.includes(path.extname(filename))
+}
+
+const isContentFile = (filename) => {
+  const separator = path.sep
+
+  return filename.replace(process.cwd(), '').startsWith(`${separator}content`)
 }
 
 const isObject = (variable) => {
@@ -45,7 +67,10 @@ const titleCase = (value) => {
 module.exports = {
   getConfig,
   getExportPath,
+  getGlobPattern,
   getPath,
+  isAssetFile,
+  isContentFile,
   isObject,
   titleCase
 }

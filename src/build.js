@@ -18,57 +18,59 @@ const md = require('markdown-it')('commonmark', {
   }
 })
 
-const { getConfig, getPath, getExportPath } = require('./utils')
+const { getConfig, getPath, getExportPath, isAssetFile, getGlobPattern, isContentFile } = require('./utils')
 const {
   getData,
   getFileContent,
   parseContent,
   writeFileContent
 } = require('./content')
-const { ASSETS_EXTENSIONS, BUILD_EXTENSIONS, THEMES_PATH } = require('./constants')
+const { THEMES_PATH } = require('./constants')
+const { getFiles } = require('./getFiles')
+const { Config } = require('./Config')
 
-handlebars.registerHelper('formatDate', function (value) {
+handlebars.registerHelper('formatDate', (value) => {
   return utils.dateFormat(new Date(value), 'YYYY-MM-dd HH:mm:ss')
 })
 
 const build = async (file, stats) => {
   try {
-    const config = getConfig()
+    // const config = getConfig()
+    const config = Config.load()
     let data
 
-    if (file !== undefined) {
-      // Check if the file is asset file.
-      if (ASSETS_EXTENSIONS.includes(path.extname(file))) {
+    if (file) {
+      if (isAssetFile(config.assets, file)) {
         const exportPath = getExportPath(file, config)
         const data = await getFileContent(file)
 
         writeFileContent(exportPath, data)
-
-        return
-      }
-
-      // Check if the file is not a content file.
-      if (!BUILD_EXTENSIONS.includes(path.extname(file))) {
+      } else if (isContentFile(file)) {
+        data = [await parseContent(file)]
+      } else {
+        // This branch is for other files than assets or content, like
+        // the theme files.
         const data = await getFileContent(file)
 
         writeFileContent(getPath(config.build, path.basename(file)), data.content)
-
-        return
       }
-
-      data = [await parseContent(file)]
     } else {
-      data = await getData(getPath(config.data.path), config.data.pattern)
+      data = await getData(
+        getPath(config.content.path),
+        getGlobPattern(config.content.files)
+      )
     }
 
-    const site = await data.map(parseFrontmatter)
-      .map(compileMarkdown)
-      .filter(page => page.layout !== undefined)
-      .sort(sortContent)
-      .reduce(buildContent, {})
+    // const site = await data.map(parseFrontmatter)
+    //   .map(compileMarkdown)
+    //   .filter(page => page.layout !== undefined)
+    //   .sort(sortContent)
+    //   .reduce(compileContent, {})
 
-    await writeContent({ ...site, ...config.site }, config)
-    await copyAssets(config.assets, config)
+    await compileSite(data, config)
+
+    // await writeContent({ ...site, ...config.site }, config)
+    // await copyAssets(config)
 
     return true
   } catch (error) {
@@ -76,7 +78,28 @@ const build = async (file, stats) => {
   }
 }
 
-const buildContent = (result, item) => {
+const buildFile = async (file, stats) => {
+  const config = Config.load()
+
+  if (isAssetFile(config.assets, file)) {
+    const exportPath = getExportPath(file, config)
+    const data = await getFileContent(file)
+
+    writeFileContent(exportPath, data)
+  } else if (isContentFile(file)) {
+    const data = await parseContent(file)
+
+    compileSite([data], config)
+  } else {
+    // This branch is for other files than assets or content, like
+    // the theme files.
+    const data = await getFileContent(file)
+
+    writeFileContent(getPath(config.build, path.basename(file)), data.content)
+  }
+}
+
+const compileContent = (result, item) => {
   if (!item.layout || item.type === 'pages') {
     const { title, permalink } = item
 
@@ -114,22 +137,46 @@ const buildContent = (result, item) => {
   return result
 }
 
-const copyAssets = async (assets, config) => {
-  for (const asset of assets) {
-    try {
-      const assetsPath = getPath(THEMES_PATH, config.theme, asset)
-      const exportPath = getPath(config.build, asset)
+const compileSite = async (data, config) => {
+  const site = await data.map(parseFrontmatter)
+    .map(compileMarkdown)
+    .filter(page => page.layout !== undefined)
+    .sort(sortContent)
+    .reduce(compileContent, {})
 
-      await fs.copy(assetsPath, exportPath)
-    } catch (error) {
-      if (error.code === 'ENOENT') {
-        console.info(`No asset [${asset}] exists.`)
-      } else {
-        console.error(error.message)
-      }
-    }
+  await writeContent({ ...site, ...config.site }, config)
+  await copyAssets(config)
+
+  return true
+}
+
+const copyAssets = async (config) => {
+  const assetsPath = getPath(THEMES_PATH, config.theme)
+  const files = await getFiles(assetsPath, getGlobPattern(config.assets))
+
+  for (const file of files) {
+    const exportPath = getPath(config.build, file)
+
+    await fs.copy(path.join(assetsPath, file), exportPath)
   }
 }
+
+// const copyAssets = async (assets, config) => {
+//   for (const asset of assets) {
+//     try {
+//       const assetsPath = getPath(THEMES_PATH, config.theme, asset)
+//       const exportPath = getPath(config.build, asset)
+
+//       await fs.copy(assetsPath, exportPath)
+//     } catch (error) {
+//       if (error.code === 'ENOENT') {
+//         console.info(`No asset [${asset}] exists.`)
+//       } else {
+//         console.error(error.message)
+//       }
+//     }
+//   }
+// }
 
 const compileMarkdown = ({ data, content, type, date }) => {
   data.date = data.date === undefined ? date : data.date
@@ -180,8 +227,10 @@ const writePageWithLayout = async (data, config) => {
 
 module.exports = {
   build,
-  buildContent,
+  buildFile,
+  compileContent,
   compileMarkdown,
+  compileSite,
   getPath,
   parseFrontmatter,
   sortContent,

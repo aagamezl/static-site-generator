@@ -5,7 +5,7 @@ const chokidar = require('chokidar')
 
 const { version } = require('./../package.json')
 
-const { build, constants, server } = require('../src')
+const { build, buildFile, constants, server } = require('../src')
 const { cleanSite, createSite } = require('./../src/site')
 const { getConfig, getPath } = require('./../src/utils')
 const { isDirectoryEmpty } = require('./../src/content')
@@ -27,6 +27,7 @@ if (params.help || params.h) {
   process.exit(0)
 }
 
+params.w = true
 if (params.b || params.build/*  || Object.keys(params).length === 0 */) {
   build().then((result) => {
     process.exit(0)
@@ -62,7 +63,7 @@ if (params.v || params.version) {
 
 if (params.w || params.watch) {
   const themePath = getPath(constants.THEMES_PATH, config.theme, '/**/*')
-  const dataPath = getPath(config.data.path, '/**/*')
+  const dataPath = getPath(config.content.path, '/**/*')
   const options = {
     ignoreInitial: true
   }
@@ -100,7 +101,7 @@ if (params.w || params.watch) {
     })
     .on('change', (path, stats) => {
       console.log(`${path} has been changed`)
-      build(path, stats).then((result) => {
+      buildFile(path, stats).then((result) => {
         console.log('Build complete')
       }).catch((error) => {
         console.error(error)

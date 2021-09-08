@@ -62,7 +62,7 @@ const createSite = async () => {
 
   const answers = await prompt(questions)
 
-  config.data.path = answers.content || config.data.path
+  config.content.path = answers.content || config.content.path
   config.build = answers.build || config.build
   config.theme = answers.theme || config.theme
   config.paginate = Number(answers.paginate || config.paginate)
@@ -71,9 +71,9 @@ const createSite = async () => {
 
   await fs.writeFile(exportConfigPath, JSON.stringify(config, null, 2), 'utf-8')
 
-  await fs.ensureDir(config.data.path)
-  await fs.ensureDir(path.join(config.data.path, 'pages'))
-  await fs.ensureDir(path.join(config.data.path, 'posts'))
+  await fs.ensureDir(config.content.path)
+  await fs.ensureDir(path.join(config.content.path, 'pages'))
+  await fs.ensureDir(path.join(config.content.path, 'posts'))
   await fs.ensureDir(config.build)
   await fs.ensureDir(getPath(THEMES_PATH, config.theme))
 }

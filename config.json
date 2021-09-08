@@ -1,15 +1,46 @@
 {
-  "data": {
+  "content": {
     "path": "content",
-    "pattern": "**/*.{md,html}"
+    "files": [
+      ".md",
+      ".html",
+      ".mdx"
+    ]
   },
   "build": "public",
   "theme": "tale",
   "paginate": 5,
   "assets": [
-    "css",
-    "js",
-    "images"
+    ".css",
+    ".js",
+    ".gif",
+    ".jpg",
+    ".jpeg",
+    ".png",
+    ".svg",
+    ".eot",
+    ".otf",
+    ".ttf",
+    ".woff",
+    ".woff2",
+    ".csv",
+    ".json",
+    ".pdf",
+    ".xml",
+    ".avi",
+    ".mov",
+    ".mp4",
+    ".mpeg",
+    ".mpg",
+    ".wmv",
+    ".ogg",
+    ".ogv",
+    ".m4v",
+    ".webm",
+    ".mp3",
+    ".wav",
+    ".wma",
+    ".aac"
   ],
   "site": {
     "title": "[Code Bites] - aagamezl",

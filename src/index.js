@@ -3,10 +3,11 @@ const content = require('./content')
 const getFiles = require('./getFiles')
 const { server } = require('./server')
 const utils = require('./utils')
-const { build, createSite, getPath } = require('./build')
+const { build, buildFile, createSite, getPath } = require('./build')
 
 module.exports = {
   build,
+  buildFile,
   constants,
   content,
   createSite,
