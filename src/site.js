@@ -1,11 +1,17 @@
 const path = require('path')
 
 const fs = require('fs-extra')
-const { prompt } = require('@devnetic/cli')
+const { format, prompt } = require('@devnetic/cli')
 
 const { THEMES_PATH } = require('./constants')
 const { getConfig, getPath } = require('./utils')
 
+/**
+ * Cleans the site by removing the build directory contents.
+ *
+ * @param {object} config
+ * @param {boolean} [confirmed=false]
+ */
 const cleanSite = async (config, confirmed = false) => {
   const questions = [{
     type: 'input',
@@ -13,21 +19,28 @@ const cleanSite = async (config, confirmed = false) => {
     message: 'Are you sure to clean the build diretory?: '
   }]
 
+  const infoLog = format.bold().blue
+  const errorLog = format.bold().red
+
   const answers = confirmed === false ? await prompt(questions) : { clean: 'y' }
 
   if (answers.clean === 'yes' || answers.clean === 'y') {
-    console.log(`Cleaning ${getPath(config.build)} directory`)
+    console.log(infoLog(`Cleaning ${getPath(config.build)} directory`))
 
     try {
       await fs.emptyDir(getPath(config.build))
     } catch (error) {
-      console.error(error)
+      console.error(errorLog(error.message))
 
       throw new Error(error)
     }
   }
 }
 
+/**
+ * Create the scaffold for the site.
+ *
+ */
 const createSite = async () => {
   const templateConfigPath = path.resolve(__dirname, '../template/config.json')
   const exportConfigPath = getPath('config.json')

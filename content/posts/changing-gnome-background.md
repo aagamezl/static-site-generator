@@ -10,7 +10,7 @@ tags:
 - bash
 ---
 
-The "problema" is that I was just tired of the boring purple Ubuntu's background login screen, I REALLY was tired of it, so I asked myself, how can I change the login screen background?, and the quick answer was, no you can't change it, the long answer was, well, you can change it, but this involves dealing with the GNOME Shell CSS.
+The "problem" is that I was just tired of the boring purple Ubuntu's background login screen, I REALLY was tired of it, so I asked myself, how can I change the login screen background?, and the quick answer was, no you can't change it, the long answer was, well, you can change it, but this involves dealing with the GNOME Shell CSS.
 
 Changing your GNOME Shell login background is not complicated if you know what to change and where to make the change. The change consists of modifying the CSS file with the desired image, but in my case, I wanted to change this image every time that I restart my laptop, and I want to download the daily [Bing](https://www.bing.com/) image to use it as background.
 

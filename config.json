@@ -10,6 +10,7 @@
   "build": "public",
   "theme": "tale",
   "paginate": 5,
+  "templateSystem": "handlebars",
   "assets": [
     ".css",
     ".js",
@@ -43,7 +44,7 @@
     ".aac"
   ],
   "site": {
-    "title": "[Code Bites] - aagamezl",
+    "title": "Code Bites",
     "author": "Álvaro José Agámez Licha"
   }
 }
