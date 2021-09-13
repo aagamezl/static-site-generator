@@ -10,6 +10,9 @@
   <!-- CSS -->
   <link rel="stylesheet" href="./css/main.css">
   <link rel="stylesheet" href="./css/post.css">
+  <link rel="stylesheet" href="./css/code.css">
+  <link rel="stylesheet" href="./css/media-queries.css">
+
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.2/styles/default.min.css">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Libre+Baskerville:400,400i,700">
 
@@ -53,11 +56,11 @@
 
     <div class="pagination">
       {{#if previous}}
-        <a href="{{previous.url}}" class="left arrow">&#8592;</a>
+      <a href="{{previous.url}}" class="left arrow">&#8592;</a>
       {{/if}}
 
       {{#if next}}
-        <a href="{{next.url}}" class="right arrow">&#8594;</a>
+      <a href="{{next.url}}" class="right arrow">&#8594;</a>
       {{/if}}
       <a href="#" class="top">Top</a>
     </div>

@@ -3,24 +3,50 @@
 const chokidar = require('chokidar')
 const { format, getParams, usage } = require('@devnetic/cli')
 
-const templateSystem = require('./../src/template/templateSystem')
-const { THEMES_PATH, SERVER_WAIT_TIME, SERVER_PORT, SERVER_HOST } = require('./../src/constants')
-const { buildFile, buildSite } = require('./../src/builder')
-const { cleanSite, createSite } = require('./../src/site')
-const { getPath, getConfig } = require('./../src/utils')
-const { isDirectoryEmpty } = require('./../src/content')
-const { startServer } = require('./../src/server')
+const templateSystem = require('./../src')
+const {
+  THEMES_PATH,
+  SERVER_WAIT_TIME,
+  SERVER_PORT,
+  SERVER_HOST,
+  TEMPLATE_SYSTEMS_PATH
+} = require('./../src')
+const { buildFile, buildSite } = require('./../src')
+const { cleanSite, createScaffold } = require('./../src')
+const { getPath, getConfig } = require('./../src')
+const { isDirectoryEmpty } = require('./../src')
+const { startServer } = require('./../src')
 const { version } = require('./../package.json')
 
 const params = getParams()
-const config = getConfig()
 const infoLog = format.bold().blue
 const errorLog = format.bold().red
 
 try {
   (async () => {
-    // Register all the template engines availables
+    // Register default all the template engines availables
     templateSystem.registerDefault()
+
+    // Import all the custom template systems
+    const customTemplateSytems = await templateSystem.importSystems(
+      '**/*.js',
+      getPath(TEMPLATE_SYSTEMS_PATH)
+    )
+
+    // Register all the custom template systems
+    customTemplateSytems.forEach(system => {
+      const template = system.template()
+
+      templateSystem.register(template.name, system)
+    })
+
+    if (params.n || params.new) {
+      await createScaffold()
+
+      process.exit(0)
+    }
+
+    const config = getConfig()
 
     if (params.b || params.build) {
       await buildSite(config)
@@ -31,19 +57,19 @@ try {
     }
 
     if (params.c || params.clean) {
-      await cleanSite(config, params.y)
+      await cleanSite(config, params.y || params.yes)
 
       process.exit(0)
     }
 
     if (params.help || params.h || Object.keys(params).length === 0) {
       usage('Usage: ssg <option> [modifier]')
-        .option(['-b', '--build'], '\t\tRun the build process')
-        .option(['-c', '--clean'], '\t\tClean the build directory')
-        .option(['-n', '--new'], '\t\tGenerate a new site')
-        .option(['-v', '--version'], '\tDisplay version')
-        .option(['-w', '--watch'], '\t\tRun the build process watching changes')
-        .option(['-h', '--help'], '\t\tShow this help')
+        .option(['-b', '--build'], '\t\t\tRun the build process')
+        .option(['-c', '--clean [-y, --yes]'], '\tClean the build directory')
+        .option(['-n', '--new'], '\t\t\tGenerate a new site')
+        .option(['-v', '--version'], '\t\tDisplay version')
+        .option(['-w', '--watch'], '\t\t\tRun the build process watching changes')
+        .option(['-h', '--help'], '\t\t\tShow this help')
         .epilog(`Copyright ${new Date().getFullYear()} - Static Site Generator`)
         .show()
 
@@ -51,7 +77,7 @@ try {
     }
 
     if (params.n || params.new) {
-      await createSite()
+      await createScaffold()
 
       process.exit(0)
     }

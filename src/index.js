@@ -1,18 +1,19 @@
 const constants = require('./constants')
 const content = require('./content')
 const getFiles = require('./getFiles')
-const { server } = require('./server')
+const server = require('./server')
+const site = require('./site')
 const utils = require('./utils')
-const { build, buildFile, createSite, getPath } = require('./build')
+const builder = require('./builder')
+const templateSystem = require('./template/templateSystem')
 
 module.exports = {
-  build,
-  buildFile,
-  constants,
-  content,
-  createSite,
+  ...builder,
+  ...constants,
+  ...content,
   getFiles,
-  getPath,
-  server,
-  utils
+  ...site,
+  ...server,
+  ...templateSystem,
+  ...utils
 }

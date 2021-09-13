@@ -3,7 +3,11 @@ const path = require('path')
 const fs = require('fs-extra')
 const { format, prompt } = require('@devnetic/cli')
 
-const { THEMES_PATH } = require('./constants')
+const {
+  SCAFFOLD_PATH,
+  TEMPLATE_SYSTEMS_PATH,
+  THEMES_PATH
+} = require('./constants')
 const { getConfig, getPath } = require('./utils')
 
 /**
@@ -11,6 +15,7 @@ const { getConfig, getPath } = require('./utils')
  *
  * @param {object} config
  * @param {boolean} [confirmed=false]
+ * @returns {Promise<void>}
  */
 const cleanSite = async (config, confirmed = false) => {
   const questions = [{
@@ -40,9 +45,10 @@ const cleanSite = async (config, confirmed = false) => {
 /**
  * Create the scaffold for the site.
  *
+ * @returns {Promise<void>}
  */
-const createSite = async () => {
-  const templateConfigPath = path.resolve(__dirname, '../template/config.json')
+const createScaffold = async () => {
+  const templateConfigPath = path.resolve(__dirname, SCAFFOLD_PATH, 'config.json')
   const exportConfigPath = getPath('config.json')
 
   const config = getConfig(templateConfigPath)
@@ -87,11 +93,12 @@ const createSite = async () => {
   await fs.ensureDir(config.content.path)
   await fs.ensureDir(path.join(config.content.path, 'pages'))
   await fs.ensureDir(path.join(config.content.path, 'posts'))
+  await fs.ensureDir(TEMPLATE_SYSTEMS_PATH)
   await fs.ensureDir(config.build)
   await fs.ensureDir(getPath(THEMES_PATH, config.theme))
 }
 
 module.exports = {
   cleanSite,
-  createSite
+  createScaffold
 }

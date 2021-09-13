@@ -6,10 +6,21 @@ const markdown = require('markdown-it')
 const matter = require('gray-matter')
 
 const { THEMES_PATH } = require('./constants')
-const { getFileContent, getData, writeFileContent, parseContent } = require('./content')
+const {
+  getExportPath,
+  getGlobPattern,
+  getPath,
+  isContentFile,
+  isAssetFile
+} = require('./utils')
+const {
+  getFileContent,
+  getData,
+  writeFileContent,
+  parseContent
+} = require('./content')
 const { getFiles } = require('./getFiles')
-const { getExportPath, getGlobPattern, getPath, isContentFile } = require('./utils')
-const { getTemplateSystem } = require('./template/templateSystem')
+const { getSystem } = require('./template/templateSystem')
 
 const commonmark = markdown('commonmark', {
   highlight: (str, lang) => {
@@ -33,30 +44,44 @@ const commonmark = markdown('commonmark', {
  * @param {object} config
  */
 const buildFile = async (file, config) => {
-  if (isContentFile(file)) {
-    const data = await getData(
-      getPath(config.content.path),
-      getGlobPattern(config.content.files)
-    )
-
-    // Generate the file content
-    const post = await generateFile(file)
-
-    // Generate the site structure, this is necessary to create the navigation
-    const site = await generateSite(data, config)
-    // Remove the pages from the site
-    site.pages = []
-    // Remove the posts from the site and Inject the post into the site posts array
-    site.posts = [post]
-
-    // Write the file content
-    await writeContent({ ...site, ...config.site }, config)
-  } else {
+  if (isAssetFile(config.assets, file)) {
     const exportPath = getExportPath(file, config)
     const data = await getFileContent(file)
 
     writeFileContent(exportPath, data)
+
+    return
   }
+
+  const data = await getData(
+    getPath(config.content.path),
+    getGlobPattern(config.content.files)
+  )
+
+  // Generate the site structure, this is necessary to create the navigation
+  const site = await generateSite(data, config)
+
+  if (isContentFile(file)) {
+    // Generate the file content
+    const content = await generateFile(file)
+
+    if (content.type === 'pages') {
+      // Inject the page into the site pages array
+      site.pages = [content]
+
+      // Remove the posts from the site
+      site.posts = []
+    } else {
+      // Remove the pages from the site
+      site.pages = []
+
+      // Inject the post into the site posts array
+      site.posts = [content]
+    }
+  }
+
+  // Write the file content
+  await writeContent({ ...site, ...config.site }, config)
 }
 
 /**
@@ -211,7 +236,7 @@ const sortContent = (a, b) => {
  * @param {object} config
  */
 const writeContent = async (site, config) => {
-  const { navigation = [], pages = [], posts } = site
+  const { navigation = [], pages = [], posts = [] } = site
   const content = [...pages, ...posts]
 
   for (const page of content) {
@@ -253,7 +278,7 @@ const writePageWithLayout = async (data, config) => {
   const exportPath = getPath(config.build, data.permalink)
 
   const html = await fs.readFile(layoutPath, 'utf-8')
-  const templateSystem = getTemplateSystem(config.templateSystem)
+  const templateSystem = getSystem(config.templateSystem)
 
   return fs.writeFile(exportPath, templateSystem.compile(html, data), 'utf-8')
 }

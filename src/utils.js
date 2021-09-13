@@ -107,6 +107,18 @@ const isObject = (value) => {
 }
 
 /**
+ * Verify if the given file is a theme file.
+ *
+ * @param {string} filename
+ * @return {boolean}
+ */
+const isThemeFile = (filename) => {
+  const separator = path.sep
+
+  return filename.replace(process.cwd(), '').startsWith(`${separator}themes`)
+}
+
+/**
  * Convert the given value to title case.
  *
  * @param {string} value
@@ -124,5 +136,6 @@ module.exports = {
   isAssetFile,
   isContentFile,
   isObject,
+  isThemeFile,
   titleCase
 }
