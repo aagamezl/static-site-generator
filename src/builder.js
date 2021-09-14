@@ -92,6 +92,7 @@ const buildFile = async (file, config) => {
  * @return {boolean}
  */
 const buildSite = async (config) => {
+  // Get the content data to be compiled
   const data = await getData(
     getPath(config.content.path),
     getGlobPattern(config.content.files)
@@ -226,7 +227,7 @@ const parseFrontmatter = (content) => {
  * @return {object}
  */
 const sortContent = (a, b) => {
-  return new Date(a.date).getTime() - new Date(b.date).getTime()
+  return new Date(b.date).getTime() - new Date(a.date).getTime()
 }
 
 /**

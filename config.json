@@ -8,7 +8,7 @@
     ]
   },
   "build": "public",
-  "theme": "tale",
+  "theme": "default",
   "paginate": 5,
   "templateSystem": "handlebars",
   "assets": [

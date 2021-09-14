@@ -106,5 +106,6 @@ dist
 # kiirus-site-generator
 public
 docs
+content
 config.json
 template-system

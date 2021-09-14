@@ -1,5 +1,13 @@
 # Static Site Generator
 
+![Node CI](https://github.com/aagamezl/static-site-generator/workflows/Node%20CI/badge.svg)
+![npm (scoped)](https://img.shields.io/npm/v/@devnetic/static-site-generator)
+![npm bundle size (scoped)](https://img.shields.io/bundlephobia/minzip/@devnetic/static-site-generator?color=red)
+![npm](https://img.shields.io/npm/dt/@devnetic/static-site-generator)
+[![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat-square)](https://github.com/feross/standard)
+![GitHub issues](https://img.shields.io/github/issues-raw/devnetic/static-site-generator)
+![GitHub](https://img.shields.io/github/license/devnetic/static-site-generator)
+
 This package let you create a static site in a very easy and fast way, you can use markdown files to create the content, and create themes to render the content.
 
 The themes use [handlebars](https://handlebarsjs.com/) to render the data coming from the markdown files, this template system is easy to use but powerful enough to almost every necessary task, but in case that you need extra features, you can write your own addons or [helpers](https://handlebarsjs.com/guide/#custom-helpers) for handlebars.

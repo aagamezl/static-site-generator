@@ -4,7 +4,7 @@ const fs = require('fs-extra')
 const { format, prompt } = require('@devnetic/cli')
 
 const {
-  SCAFFOLD_PATH,
+  SCAFFOLDING_PATH,
   TEMPLATE_SYSTEMS_PATH,
   THEMES_PATH
 } = require('./constants')
@@ -48,7 +48,7 @@ const cleanSite = async (config, confirmed = false) => {
  * @returns {Promise<void>}
  */
 const createScaffold = async () => {
-  const templateConfigPath = path.resolve(__dirname, SCAFFOLD_PATH, 'config.json')
+  const templateConfigPath = path.resolve(__dirname, SCAFFOLDING_PATH, 'config.json')
   const exportConfigPath = getPath('config.json')
 
   const config = getConfig(templateConfigPath)
