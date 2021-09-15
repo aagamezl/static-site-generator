@@ -6,7 +6,7 @@
 ![npm](https://img.shields.io/npm/dt/@devnetic/static-site-generator)
 [![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat-square)](https://github.com/feross/standard)
 ![GitHub issues](https://img.shields.io/github/issues-raw/devnetic/static-site-generator)
-![GitHub](https://img.shields.io/github/license/devnetic/static-site-generator)
+![GitHub](https://img.shields.io/github/license/aagamezl/static-site-generator)
 
 This package let you create a static site in a very easy and fast way, you can use markdown files to create the content, and create themes to render the content.
 
