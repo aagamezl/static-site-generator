@@ -1,7 +1,7 @@
 {
   "name": "@devnetic/static-site-generator",
-  "version": "1.0.0",
-  "description": "",
+  "version": "1.0.1",
+  "description": "Simple and fast static content generator.",
   "main": "./bin/ssg.js",
   "bin": {
     "ssg": "./bin/ssg.js"
@@ -16,8 +16,12 @@
     "static",
     "site",
     "generator",
+    "content",
     "static site generator",
+    "static content generator",
     "static site",
+    "static content",
+    "content generator",
     "blog",
     "blogger",
     "blogging",
@@ -27,12 +31,19 @@
     "ssg"
   ],
   "files": [
-    "bin",
-    "template/**/*",
+    "bin/**/*",
     "src/**/*"
   ],
   "author": "Álvaro José Agámez Licha",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aagamezl/static-site-generator"
+  },
+  "bugs": {
+    "url": "https://github.com/devnetic/static-site-generator/issues"
+  },
+  "homepage": "https://github.com/devnetic/static-site-generator#readme",
   "devDependencies": {
     "snazzy": "^9.0.0",
     "standard": "^16.0.3"
