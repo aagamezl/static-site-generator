@@ -1,50 +1,97 @@
-const fs = require('fs').promises
+const fs = require('fs-extra')
 const path = require('path')
 
 const { getFiles } = require('./getFiles')
 
-// const getFiles = async (contentPath, fileType = '.json') => {
-//   const files = await fs.readdir(contentPath, { withFileTypes: true })
-
-//   return files
-//     .filter(file => file.isFile() && file.name.endsWith(fileType))
-//     .map(file => file.name)
-// }
-
-const getContent = async (contentPath, extension = '.json') => {
-  // const contentPath = path.join(process.cwd(), DATA_PATH)
-
-  const files = await getFiles(contentPath, extension)
+/**
+ * Get the content of the content directory, parsing each file and
+ * returning an array of objects.
+ *
+ * @param {string} contentPath
+ * @param {string} pattern
+ * @return {Array<object>}
+ */
+const getData = async (contentPath, pattern) => {
+  const files = await getFiles(contentPath, pattern)
 
   const result = []
-  for (let index = 0, length = files.length; index < length; index ++) {
+  for (const file of files) {
     try {
-      const content = await fs.readFile(files[index], 'utf8')
+      const filename = path.join(contentPath, file)
 
-      result.push(content)
+      result.push(await parseContent(filename))
     } catch (error) {
       console.error(error)
     }
   }
 
   return result
+}
 
-  // const result = []
-  // for (let index = 0, length = files.length; index < length; index ++) {
-  //   try {
-  //     const data = await fs.readFile(path.join(contentPath, files[index]), 'utf8')
-  //     const content = JSON.parse(data);
+/**
+ * Get the content of a file.
+ *
+ * @param {string} filename
+ * @param {string} [encoding='utf8']
+ * @return {Promise<string>}
+ */
+const getFileContent = (filename, encoding = 'utf8') => {
+  try {
+    return fs.readFile(filename, encoding)
+  } catch (error) {
+    console.error(error)
+  }
+}
 
-  //     result[content.type] = (result[content.type] || [])
-  //     result[content.type].push(content)
-  //   } catch (error) {
-  //     console.error(error)
-  //   }
-  // }
+/**
+ * Verify if the directory is empty or not.
+ *
+ * @param {string} directory
+ * @return {boolean}
+ */
+const isDirectoryEmpty = async (directory) => {
+  const result = await fs.readdir(directory)
 
-  // return result
+  return !result.length
+}
+
+/**
+ * Parse the content of a file, getting the type,filenae, content and date.
+ *
+ * @param {string} filename
+ * @param {string} [encoding='utf8']
+ * @return {object}
+ */
+const parseContent = async (filename, encoding = 'utf8') => {
+  const segments = filename.split(path.sep)
+  const type = segments[segments.length - 2]
+  const content = await getFileContent(filename)
+  const { mtime } = await fs.stat(filename)
+
+  return {
+    content,
+    type,
+    filename: path.basename(filename),
+    date: mtime
+  }
+}
+
+/**
+ * Write the a content to a file.
+ *
+ * @param {string} filename
+ * @param {string} content
+ * @param {string} [encoding='utf8']
+ * @return {Promise<void>}
+ */
+const writeFileContent = (filename, content, encoding = 'utf8') => {
+  return fs.writeFile(filename, content, encoding)
 }
 
 module.exports = {
-  getContent
+  isDirectoryEmpty,
+  getData,
+  getFileContent,
+  parseContent,
+  writeFileContent
 }

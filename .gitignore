@@ -102,3 +102,10 @@ dist
 
 # TernJS port file
 .tern-port
+
+# kiirus-site-generator
+public
+docs
+content
+config.json
+template-system

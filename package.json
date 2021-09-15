@@ -1,16 +1,52 @@
 {
-  "name": "blog-system",
+  "name": "@devnetic/static-site-generator",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
-  "scripts": {
-    "start": "http-server"
+  "main": "./bin/ssg.js",
+  "bin": {
+    "ssg": "./bin/ssg.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "scripts": {
+    "build": "node bin/ssg.js",
+    "build:watch": "node bin/ssg.js --watch",
+    "lint": "standard --verbose | snazzy",
+    "lint:fix": "standard --fix"
+  },
+  "keywords": [
+    "static",
+    "site",
+    "generator",
+    "static site generator",
+    "static site",
+    "blog",
+    "blogger",
+    "blogging",
+    "blog-generator",
+    "markdown",
+    "website",
+    "ssg"
+  ],
+  "files": [
+    "bin",
+    "template/**/*",
+    "src/**/*"
+  ],
+  "author": "Álvaro José Agámez Licha",
+  "license": "MIT",
   "devDependencies": {
-    "highlight.js": "^10.7.2",
-    "markdown-it": "^12.0.4"
+    "snazzy": "^9.0.0",
+    "standard": "^16.0.3"
+  },
+  "dependencies": {
+    "@devnetic/cli": "^1.2.1",
+    "@devnetic/utils": "^1.2.1",
+    "chokidar": "^3.5.2",
+    "fs-extra": "^10.0.0",
+    "glob": "^7.1.6",
+    "gray-matter": "^4.0.3",
+    "handlebars": "^4.7.7",
+    "highlight.js": "^11.2.0",
+    "live-server": "^1.2.1",
+    "markdown-it": "^12.2.0"
   }
 }

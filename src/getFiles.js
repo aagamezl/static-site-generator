@@ -1,22 +1,22 @@
-const { readdir } = require('fs').promises
-const { resolve } = require('path')
+const glob = require('glob')
 
-const getFiles = async (dir, extension) => {
-  const dirents = await readdir(dir, { withFileTypes: true })
+/**
+ * Get the files in a directory
+ *
+ * @param {string} directory
+ * @param {string} pattern
+ * @return {Promise<string[]>}
+ */
+const getFiles = async (directory, pattern) => {
+  return new Promise((resolve, reject) => {
+    glob(pattern, { cwd: directory }, (error, files) => {
+      if (error) {
+        return reject(error)
+      }
 
-  const files = await Promise.all(dirents.map((dirent) => {
-    const resourcePath = resolve(dir, dirent.name)
-
-    if (dirent.isDirectory()) {
-      return getFiles(resourcePath, extension)
-    }
-
-    if (dirent.name.endsWith(extension)) {
-      return resourcePath
-    }
-  }))
-
-  return Array.prototype.concat(...files.filter(file => file !== undefined)) // flat the array
+      return resolve(files)
+    })
+  })
 }
 
 module.exports = {
