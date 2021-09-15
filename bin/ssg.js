@@ -111,8 +111,8 @@ try {
           }
 
           const options = {
-            port: config?.server?.port || SERVER_PORT, // Set the server port. Defaults to 8080.
-            host: config?.server?.host || SERVER_HOST, // Set the address to bind to. Defaults to 0.0.0.0 or process.env.IP.
+            port: config.server.port || SERVER_PORT, // Set the server port. Defaults to 8080.
+            host: config.server.host || SERVER_HOST, // Set the address to bind to. Defaults to 0.0.0.0 or process.env.IP.
             root: getPath(config.build), // Set root directory that's being served. Defaults to cwd.
             watch: getPath(config.build),
             wait: SERVER_WAIT_TIME // Wait for all changes, before reloading.

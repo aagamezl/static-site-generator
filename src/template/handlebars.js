@@ -5,6 +5,10 @@ handlebars.registerHelper('formatDate', (value) => {
   return utils.dateFormat(new Date(value), 'YYYY-MM-dd HH:mm:ss')
 })
 
+handlebars.registerHelper('getCurrentYear', () => {
+  return utils.dateFormat(new Date(new Date()), 'YYYY')
+})
+
 /**
  * Compile the template and return the compiled result.
  *
