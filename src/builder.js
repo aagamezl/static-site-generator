@@ -230,6 +230,10 @@ const sortContent = (a, b) => {
   return new Date(b.date).getTime() - new Date(a.date).getTime()
 }
 
+const stringifyFrontmatter = (value) => {
+  return matter.stringify('', value)
+}
+
 /**
  * Write the content of the site
  *
@@ -286,5 +290,6 @@ const writePageWithLayout = async (data, config) => {
 
 module.exports = {
   buildFile,
-  buildSite
+  buildSite,
+  stringifyFrontmatter
 }

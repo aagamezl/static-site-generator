@@ -9,6 +9,10 @@ handlebars.registerHelper('getCurrentYear', () => {
   return utils.dateFormat(new Date(new Date()), 'YYYY')
 })
 
+handlebars.registerHelper('twitterShare', (via, hashtags, size) => {
+  return `<a class="twitter-share-button" href="https://twitter.com/intent/tweet?via=${via}&hashtags=${hashtags}" data-size="${size}">Tweet</a>`
+})
+
 /**
  * Compile the template and return the compiled result.
  *

@@ -119,6 +119,14 @@ const isThemeFile = (filename) => {
 }
 
 /**
+ * This method returns an object whose properties represent significant elements
+ * of the path.
+ *
+ * @param {string} filename
+ */
+const parseFilename = (filename) => path.parse(filename)
+
+/**
  * Convert the given value to title case.
  *
  * @param {string} value
@@ -137,5 +145,6 @@ module.exports = {
   isContentFile,
   isObject,
   isThemeFile,
+  parseFilename,
   titleCase
 }

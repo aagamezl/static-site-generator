@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>{{site.title}}</title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="./css/main.css">
+  <link rel="stylesheet" href="./css/media-queries.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Libre+Baskerville:400,400i,700">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" sizes="32x32" href="/tale/assets/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/tale/assets/favicon-16x16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/tale/assets/apple-touch-icon.png">
+</head>
+
+<body>
+  <nav class="nav">
+    <div class="nav-container">
+      <a href="{{site.github.url}}" target="_blank">
+        <h2 class="nav-title">{{site.github.username}}</h2>
+      </a>
+      <ul>
+        {{#each navigation}}
+        <li>
+          <a href="{{permalink}}">{{title}}</a>
+        </li>
+        {{/each}}
+      </ul>
+    </div>
+  </nav>
+
+  <main>
+    <div class="catalogue">
+      {{#each site.posts}}
+      <div class="catalogue-item">
+        <time datetime="{{date}}" class="catalogue-time">{{formatDate date}}</time>
+        <a href="{{permalink}}">
+          <h1 class="catalogue-title">{{title}}</h1>
+        </a>
+
+        <p>{{{overview}}}</p>
+      </div>
+      {{/each}}
+    </div>
+  </main>
+
+  <footer>
+    <span>
+      <time datetime="2020-09-16 05:49:07 +0000">{{getCurrentYear}}</time>
+      <span>© <a href="{{site.linkedin}}" target="_blank">{{site.author}}</a>. Made with Love and Passion.</span>.
+    </span>
+  </footer>
+</body>
+
+</html>

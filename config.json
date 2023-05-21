@@ -1,4 +1,8 @@
 {
+  "site": {
+    "title": "",
+    "author": ""
+  },
   "content": {
     "path": "content",
     "files": [
@@ -7,7 +11,7 @@
       ".mdx"
     ]
   },
-  "build": "public",
+  "build": "docs",
   "theme": "default",
   "paginate": 5,
   "templateSystem": "handlebars",
@@ -43,8 +47,8 @@
     ".wma",
     ".aac"
   ],
-  "site": {
-    "title": "Code Bites",
-    "author": "Álvaro José Agámez Licha"
+  "server": {
+    "host": "127.0.0.1",
+    "port": "8080"
   }
 }

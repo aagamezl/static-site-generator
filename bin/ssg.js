@@ -11,10 +11,10 @@ const {
   SERVER_HOST,
   TEMPLATE_SYSTEMS_PATH
 } = require('./../src')
-const { buildFile, buildSite } = require('./../src')
+const { buildFile, buildSite, stringifyFrontmatter } = require('./../src')
 const { cleanSite, createScaffold } = require('./../src')
 const { getPath, getConfig } = require('./../src')
-const { isDirectoryEmpty } = require('./../src')
+const { isDirectoryEmpty, parseFilename, writeFileContent } = require('./../src')
 const { startServer } = require('./../src')
 const { version } = require('./../package.json')
 
@@ -62,20 +62,6 @@ try {
       process.exit(0)
     }
 
-    if (params.help || params.h || Object.keys(params).length === 0) {
-      usage('Usage: ssg <option> [modifier]')
-        .option(['-b', '--build'], '\t\t\tRun the build process')
-        .option(['-c', '--clean [-y, --yes]'], '\tClean the build directory')
-        .option(['-n', '--new'], '\t\t\tGenerate a new site')
-        .option(['-v', '--version'], '\t\tDisplay version')
-        .option(['-w', '--watch'], '\t\t\tRun the build process watching changes')
-        .option(['-h', '--help'], '\t\t\tShow this help')
-        .epilog(`Copyright ${new Date().getFullYear()} - Static Site Generator`)
-        .show()
-
-      process.exit(0)
-    }
-
     if (params.n || params.new) {
       await createScaffold()
 
@@ -118,7 +104,7 @@ try {
             wait: SERVER_WAIT_TIME // Wait for all changes, before reloading.
           }
 
-          console.log(infoLog('Starting server'))
+          console.log(infoLog('Starting Server'))
 
           startServer(options)
         }).on('change', async (path, stats) => {
@@ -126,6 +112,81 @@ try {
 
           await buildFile(path, config)
         })
+    }
+
+    params.e = true
+    if (params.e || params.editor) {
+      const options = {
+        port: config.server.port || SERVER_PORT, // Set the server port. Defaults to 8080.
+        host: config.server.host || SERVER_HOST, // Set the address to bind to. Defaults to 0.0.0.0 or process.env.IP.
+        // middleware: [(req, res, next) => {
+        //   // res.setHeader('Content-Type', 'application/json')
+
+        //   switch (req.url) {
+        //     case '/save': {
+        //       try {
+        //         const body = []
+
+        //         req.on('error', (err) => {
+        //           console.error(err)
+        //         }).on('data', (chunk) => {
+        //           body.push(chunk)
+        //         }).on('end', () => {
+        //           const data = JSON.parse(Buffer.concat(body).toString())
+        //           const contentFile = parseFilename(data.frontmatter.permalink).name + '.md'
+        //           const filename = getPath(config.content.path, 'posts', contentFile)
+
+        //           const frontmatter = stringifyFrontmatter(data.frontmatter)
+        //           writeFileContent(filename, frontmatter + data.content)
+
+        //           const response = {
+        //             message: 'Document saved sucessfully'
+        //           }
+
+        //           res.write(JSON.stringify(response))
+        //           res.end()
+
+        //           next()
+        //         })
+        //       } catch (error) {
+        //         const response = {
+        //           message: `Error: ${error.message}`
+        //         }
+
+        //         res.statusCode = 500
+        //         res.write(JSON.stringify(response))
+        //         res.end()
+
+        //         next()
+        //       }
+
+        //       break
+        //     }
+
+        //     default:
+        //       next()
+        //   }
+        // }],
+        root: './src/editor'
+      }
+
+      console.log(infoLog('Starting Markdown Editor'))
+
+      startServer(options)
+    }
+
+    if (params.help || params.h || Object.keys(params).length === 0) {
+      usage('Usage: ssg <option> [modifier]')
+        .option(['-b', '--build'], '\t\t\tRun the build process')
+        .option(['-c', '--clean [-y, --yes]'], '\tClean the build directory')
+        .option(['-n', '--new'], '\t\t\tGenerate a new site')
+        .option(['-v', '--version'], '\t\tDisplay version')
+        .option(['-w', '--watch'], '\t\t\tRun the build process watching changes')
+        .option(['-h', '--help'], '\t\t\tShow this help')
+        .epilog(`Copyright ${new Date().getFullYear()} - Static Site Generator`)
+        .show()
+
+      process.exit(0)
     }
   })()
 } catch (error) {
